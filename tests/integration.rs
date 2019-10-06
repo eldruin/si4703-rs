@@ -3,7 +3,7 @@ extern crate si470x;
 use hal::i2c::Transaction as I2cTrans;
 
 mod common;
-use self::common::{destroy, new_si4703, DEV_ADDR};
+use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
 
 const DATA: [u8; 32] = [
     0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0, 1, 2, 3, 4, 5, 6, 7,
@@ -31,3 +31,20 @@ fn can_enable() {
     dev.enable().unwrap();
     destroy(dev);
 }
+
+macro_rules! write_powercfg_test {
+    ($name:ident, $value:expr, $method:ident $(, $arg:expr)*) => {
+        #[test]
+        fn $name() {
+            let transactions = [
+                I2cTrans::read(DEV_ADDR, [0;18].to_vec()),
+                I2cTrans::write(DEV_ADDR, vec![($value >> 8) as u8, $value as u8])];
+            let mut dev = new_si4703(&transactions);
+            dev.$method($($arg),*).unwrap();
+            destroy(dev);
+        }
+    };
+}
+
+write_powercfg_test!(can_unmute, 0x4000_u16, unmute);
+write_powercfg_test!(can_mute, 0x0, mute);

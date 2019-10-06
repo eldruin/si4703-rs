@@ -8,11 +8,13 @@ const DEVICE_ADDRESS: u8 = 0x10;
 
 struct Register;
 impl Register {
+    const POWERCFG: usize = 0x2;
     const TEST1: usize = 0x7;
 }
 
 struct BitFlags;
 impl BitFlags {
+    const DMUTE: u16 = 1 << 14;
     const ENABLE: u16 = 1;
 }
 
@@ -72,6 +74,29 @@ where
     /// Enable the device.
     pub fn enable(&mut self) -> Result<(), Error<E>> {
         self.write_powercfg(BitFlags::ENABLE)
+    }
+
+    /// Unmute (disable mute)
+    pub fn unmute(&mut self) -> Result<(), Error<E>> {
+        let powercfg = self.read_powercfg()?;
+        self.write_powercfg(powercfg | BitFlags::DMUTE)
+    }
+
+    /// Mute (enable mute)
+    pub fn mute(&mut self) -> Result<(), Error<E>> {
+        let powercfg = self.read_powercfg()?;
+        self.write_powercfg(powercfg & !BitFlags::DMUTE)
+    }
+
+
+    fn read_powercfg(&mut self) -> Result<u16, Error<E>> {
+        const OFFSET: usize = 0xA;
+        let mut data = [0; 32];
+        self.i2c
+            .read(DEVICE_ADDRESS, &mut data[..18])
+            .map_err(Error::I2C)?;
+        let registers = to_registers(data, OFFSET);
+        Ok(registers[Register::POWERCFG])
     }
 
     fn read_registers(&mut self) -> Result<[u16; 16], Error<E>> {
