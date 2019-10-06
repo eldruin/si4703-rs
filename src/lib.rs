@@ -99,3 +99,16 @@ pub enum DeEmphasis {
     /// 50 us (used in Europe, Australia and Japan)
     Us50,
 }
+
+/// GPIO2 configuration
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Gpio2Config {
+    /// High impedance (default)
+    HighImpedance,
+    /// STC/RDS interrupt (logic high until interrupt occurs)
+    StcRdsInterrupt,
+    /// High
+    High,
+    /// Low
+    Low,
+}

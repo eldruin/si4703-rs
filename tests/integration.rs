@@ -1,7 +1,7 @@
 extern crate embedded_hal_mock as hal;
 extern crate si470x;
 use hal::i2c::Transaction as I2cTrans;
-use si470x::{DeEmphasis, Error, SeekDirection, SeekMode};
+use si470x::{DeEmphasis, Error, Gpio2Config, SeekDirection, SeekMode};
 
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
@@ -93,3 +93,9 @@ write_test!(set_de_50, BF::DE, 16, 3, set_deemphasis, DeEmphasis::Us50);
 write_test!(set_vol_min, 0, 16, 4, set_volume, 0);
 write_test!(set_vol_max, 0xF, 16, 4, set_volume, 0xF);
 set_invalid_test!(cannot_set_too_high_vol, new_si4703, set_volume, 0x10);
+
+const STC_RDS_INT: Gpio2Config = Gpio2Config::StcRdsInterrupt;
+write_test!(gpio2_hi, 0, 16, 3, set_gpio2, Gpio2Config::HighImpedance);
+write_test!(gpio2_int, 1 << 2, 16, 3, set_gpio2, STC_RDS_INT);
+write_test!(gpio2_high, 3 << 2, 16, 3, set_gpio2, Gpio2Config::High);
+write_test!(gpio2_low, 2 << 2, 16, 3, set_gpio2, Gpio2Config::Low);

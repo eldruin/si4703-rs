@@ -1,4 +1,4 @@
-use super::{ic, DeEmphasis, Error, SeekDirection, SeekMode, Si470x};
+use super::Gpio2Config;
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
 use hal::blocking::i2c;
@@ -21,6 +21,7 @@ impl BitFlags {
     const SKMODE: u16 = 1 << 10;
     const SEEKUP: u16 = 1 << 9;
     const ENABLE: u16 = 1;
+    const STCIEN: u16 = 1 << 14;
 }
 
 /// Reset the device and select I2C communication
@@ -137,6 +138,20 @@ where
         regs[Register::SYSCONFIG2] &= 0xFFF0;
         regs[Register::SYSCONFIG2] |= u16::from(volume);
         self.write_registers(&regs[0..=Register::SYSCONFIG2])
+    }
+
+    /// Set GPIO2 function / status
+    pub fn set_gpio2(&mut self, config: Gpio2Config) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        let mask = match config {
+            Gpio2Config::HighImpedance => 0,
+            Gpio2Config::StcRdsInterrupt => 1,
+            Gpio2Config::Low => 2,
+            Gpio2Config::High => 3,
+        };
+        regs[Register::SYSCONFIG1] &= 0xFFF3;
+        regs[Register::SYSCONFIG1] |= mask << 2;
+        self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
     fn read_powercfg(&mut self) -> Result<u16, Error<E>> {
