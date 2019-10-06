@@ -99,3 +99,6 @@ write_test!(gpio2_hi, 0, 16, 3, set_gpio2, Gpio2Config::HighImpedance);
 write_test!(gpio2_int, 1 << 2, 16, 3, set_gpio2, STC_RDS_INT);
 write_test!(gpio2_high, 3 << 2, 16, 3, set_gpio2, Gpio2Config::High);
 write_test!(gpio2_low, 2 << 2, 16, 3, set_gpio2, Gpio2Config::Low);
+
+write_test!(dis_stci, 0, 16, 3, disable_stc_interrupts);
+write_test!(en_stci, BF::STCIEN, 16, 3, enable_stc_interrupts);

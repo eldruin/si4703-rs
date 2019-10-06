@@ -140,6 +140,23 @@ where
         self.write_registers(&regs[0..=Register::SYSCONFIG2])
     }
 
+    /// Enable generating STC interrupts.
+    ///
+    /// For this to be useful, gpio2 pin must be configured to be
+    /// used as STC/RDS interrupt.
+    pub fn enable_stc_interrupts(&mut self) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        regs[Register::SYSCONFIG1] |= BitFlags::STCIEN;
+        self.write_registers(&regs[0..=Register::SYSCONFIG1])
+    }
+
+    /// Disable generating STC interrupts.
+    pub fn disable_stc_interrupts(&mut self) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        regs[Register::SYSCONFIG1] &= !BitFlags::STCIEN;
+        self.write_registers(&regs[0..=Register::SYSCONFIG1])
+    }
+
     /// Set GPIO2 function / status
     pub fn set_gpio2(&mut self, config: Gpio2Config) -> Result<(), Error<E>> {
         let mut regs = self.read_registers()?;
