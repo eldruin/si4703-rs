@@ -72,6 +72,10 @@ where
     }
 
     /// Enable the device.
+    ///
+    /// After calling this it must be waited for the device to power up.
+    /// See: Powerup time in the datasheet.
+    /// On the Si4703, this is a maximum of 110ms.
     pub fn enable(&mut self) -> Result<(), Error<E>> {
         self.write_powercfg(BitFlags::ENABLE)
     }
