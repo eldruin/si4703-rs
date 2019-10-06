@@ -70,3 +70,13 @@ pub struct Si470x<I2C, IC> {
     is_seeking: bool,
     _ic: PhantomData<IC>,
 }
+
+
+/// De-emphasis
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum DeEmphasis {
+    /// 75 us (used in USA) (default)
+    Us75,
+    /// 50 us (used in Europe, Australia and Japan)
+    Us50,
+}

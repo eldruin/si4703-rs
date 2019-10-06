@@ -1,4 +1,4 @@
-use super::{ic, Error, Si470x};
+use super::{ic, DeEmphasis, Error, Si470x};
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
 use hal::blocking::i2c;
@@ -9,12 +9,14 @@ const DEVICE_ADDRESS: u8 = 0x10;
 struct Register;
 impl Register {
     const POWERCFG: usize = 0x2;
+    const SYSCONFIG1: usize = 0x4;
     const TEST1: usize = 0x7;
 }
 
 struct BitFlags;
 impl BitFlags {
     const DMUTE: u16 = 1 << 14;
+    const DE: u16 = 1 << 11;
     const ENABLE: u16 = 1;
 }
 
@@ -90,6 +92,17 @@ where
     pub fn mute(&mut self) -> Result<(), Error<E>> {
         let powercfg = self.read_powercfg()?;
         self.write_powercfg(powercfg & !BitFlags::DMUTE)
+    }
+
+
+    /// Set de-emphasis
+    pub fn set_deemphasis(&mut self, de: DeEmphasis) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        match de {
+            DeEmphasis::Us75 => regs[Register::SYSCONFIG1] &= !BitFlags::DE,
+            DeEmphasis::Us50 => regs[Register::SYSCONFIG1] |= BitFlags::DE,
+        }
+        self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
 
