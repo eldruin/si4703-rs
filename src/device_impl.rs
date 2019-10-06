@@ -1,7 +1,10 @@
-use super::Gpio2Config;
+use super::{
+    ic, DeEmphasis, Error, ErrorWithPin, Gpio2Config, SeekDirection, SeekMode, SeekingState, Si470x,
+};
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
 use hal::blocking::i2c;
+use hal::digital::v2::InputPin;
 use hal::digital::v2::OutputPin;
 
 const DEVICE_ADDRESS: u8 = 0x10;
@@ -52,7 +55,7 @@ where
     pub fn new_si4703(i2c: I2C) -> Self {
         Si470x {
             i2c,
-            is_seeking: false,
+            seeking_state: SeekingState::Idle,
             _ic: PhantomData,
         }
     }
@@ -183,61 +186,127 @@ where
         let seek = (regs[Register::POWERCFG] & BitFlags::SEEK) != 0;
         let stc = (regs[Register::STATUSRSSI] & BitFlags::STC) != 0;
 
-        match (self.is_seeking, seek, stc) {
-            (false, false, false) => {
-                // Start seeking
+        match (self.seeking_state, seek, stc) {
+            (SeekingState::Idle, false, false) => {
                 regs[Register::POWERCFG] |= BitFlags::SEEK;
                 self.write_powercfg(regs[Register::POWERCFG])
                     .map_err(nb::Error::Other)?;
-                self.is_seeking = true;
+                self.seeking_state = SeekingState::Seeking;
                 Err(nb::Error::WouldBlock)
             }
-            (true, true, true) => {
-                // Found
+            (SeekingState::Seeking, true, true) => {
                 regs[Register::POWERCFG] &= !(BitFlags::SEEK);
                 self.write_powercfg(regs[Register::POWERCFG])
                     .map_err(nb::Error::Other)?;
-                // Wait for device to clear STC
+                self.seeking_state = SeekingState::WaitingForStcToClear;
                 Err(nb::Error::WouldBlock)
             }
-            (true, false, false) => {
-                self.is_seeking = false;
+            (SeekingState::WaitingForStcToClear, false, false) => {
+                self.seeking_state = SeekingState::Idle;
                 Ok(())
             }
             (_, _, _) => Err(nb::Error::WouldBlock),
         }
     }
+
+    /// Seek using GPIO2 as STC interrupt pin (recommended)
+    ///
+    /// This will configure GPIO2 as STC interrupt pin and enable
+    /// STC interrupts if appropriate.
+    pub fn seek_with_stc_int_pin<PinE, P: InputPin<Error = PinE>>(
+        &mut self,
+        stc_int_pin: &mut P,
+    ) -> nb::Result<(), ErrorWithPin<E, PinE>> {
+        if self.seeking_state == SeekingState::Seeking
+            && stc_int_pin
+                .is_high()
+                .map_err(ErrorWithPin::Pin)
+                .map_err(nb::Error::Other)?
+        {
+            Err(nb::Error::WouldBlock)
+        } else {
+            let mut regs = self.read_registers_bare_err().map_err(ErrorWithPin::I2C)?;
+            let seek = (regs[Register::POWERCFG] & BitFlags::SEEK) != 0;
+            let stc = (regs[Register::STATUSRSSI] & BitFlags::STC) != 0;
+
+            match (self.seeking_state, seek, stc) {
+                (SeekingState::Idle, false, false) => {
+                    regs[Register::POWERCFG] |= BitFlags::SEEK;
+                    let previous_sysconfig1 = regs[Register::SYSCONFIG1];
+                    regs[Register::SYSCONFIG1] &= 0xFFF3;
+                    regs[Register::SYSCONFIG1] |= 1 << 2;
+                    regs[Register::SYSCONFIG1] |= BitFlags::STCIEN;
+                    if previous_sysconfig1 != regs[Register::SYSCONFIG1] {
+                        self.write_registers_bare_err(&regs[..=Register::SYSCONFIG1])
+                            .map_err(ErrorWithPin::I2C)
+                            .map_err(nb::Error::Other)?;
+                    } else {
+                        self.write_powercfg_bare_err(regs[Register::POWERCFG])
+                            .map_err(ErrorWithPin::I2C)
+                            .map_err(nb::Error::Other)?;
+                    }
+                    self.seeking_state = SeekingState::Seeking;
+                Err(nb::Error::WouldBlock)
+            }
+                (SeekingState::Seeking, true, true) => {
+                    regs[Register::POWERCFG] &= !(BitFlags::SEEK);
+                    self.write_powercfg_bare_err(regs[Register::POWERCFG])
+                        .map_err(ErrorWithPin::I2C)
+                        .map_err(nb::Error::Other)?;
+                    self.seeking_state = SeekingState::WaitingForStcToClear;
+                    Err(nb::Error::WouldBlock)
+                }
+                (SeekingState::WaitingForStcToClear, false, false) => {
+                    self.seeking_state = SeekingState::Idle;
+                Ok(())
+            }
+            (_, _, _) => Err(nb::Error::WouldBlock),
+        }
+    }
+    }
+
     fn read_powercfg(&mut self) -> Result<u16, Error<E>> {
+        self.read_powercfg_bare_err().map_err(Error::I2C)
+    }
+
+    fn read_powercfg_bare_err(&mut self) -> Result<u16, E> {
         const OFFSET: usize = 0xA;
         let mut data = [0; 32];
-        self.i2c
-            .read(DEVICE_ADDRESS, &mut data[..18])
-            .map_err(Error::I2C)?;
+        self.i2c.read(DEVICE_ADDRESS, &mut data[..18])?;
         let registers = to_registers(data, OFFSET);
         Ok(registers[Register::POWERCFG])
     }
 
     fn read_registers(&mut self) -> Result<[u16; 16], Error<E>> {
+        self.read_registers_bare_err().map_err(Error::I2C)
+    }
+
+    fn read_registers_bare_err(&mut self) -> Result<[u16; 16], E> {
         const OFFSET: usize = 0xA;
         let mut data = [0; 32];
-        self.i2c
-            .read(DEVICE_ADDRESS, &mut data)
-            .map_err(Error::I2C)?;
+        self.i2c.read(DEVICE_ADDRESS, &mut data)?;
         let registers = to_registers(data, OFFSET);
         Ok(registers)
     }
 
     fn write_powercfg(&mut self, value: u16) -> Result<(), Error<E>> {
+        self.write_powercfg_bare_err(value).map_err(Error::I2C)
+    }
+
+    fn write_powercfg_bare_err(&mut self, value: u16) -> Result<(), E> {
         let data = [(value >> 8) as u8, value as u8];
-        self.i2c.write(DEVICE_ADDRESS, &data).map_err(Error::I2C)
+        self.i2c.write(DEVICE_ADDRESS, &data)
     }
 
     fn write_registers(&mut self, registers: &[u16]) -> Result<(), Error<E>> {
+        self.write_registers_bare_err(registers).map_err(Error::I2C)
+    }
+
+    fn write_registers_bare_err(&mut self, registers: &[u16]) -> Result<(), E> {
         const OFFSET: usize = 0x2;
         let data = from_registers(registers, OFFSET);
         self.i2c
             .write(DEVICE_ADDRESS, &data[..((registers.len() - OFFSET) * 2)])
-            .map_err(Error::I2C)
     }
 }
 

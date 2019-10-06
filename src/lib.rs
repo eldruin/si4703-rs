@@ -58,6 +58,16 @@ pub enum Error<E> {
     InvalidInputData,
 }
 
+/// Errors for operations involving I2C communication as well
+/// as interaction with pins
+#[derive(Debug)]
+pub enum ErrorWithPin<CommE, PinE> {
+    /// I²C bus communication error
+    I2C(CommE),
+    /// Error while communicating with pin
+    Pin(PinE),
+}
+
 /// IC markers
 #[doc(hidden)]
 pub mod ic {
@@ -65,11 +75,18 @@ pub mod ic {
     pub struct Si4703(());
 }
 
+#[derive(Debug, Copy, Clone, PartialEq)]
+enum SeekingState {
+    Idle,
+    Seeking,
+    WaitingForStcToClear,
+}
+
 /// Si470x device driver
 #[derive(Debug)]
 pub struct Si470x<I2C, IC> {
     i2c: I2C,
-    is_seeking: bool,
+    seeking_state: SeekingState,
     _ic: PhantomData<IC>,
 }
 

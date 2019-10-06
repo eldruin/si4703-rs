@@ -3,6 +3,7 @@ extern crate si470x;
 #[macro_use]
 extern crate nb;
 use hal::i2c::Transaction as I2cTrans;
+use hal::pin::{Mock as PinMock, State as PinState, Transaction as PinTrans};
 use si470x::{DeEmphasis, Error, Gpio2Config, SeekDirection, SeekMode};
 
 mod common;
@@ -107,33 +108,74 @@ write_test!(en_stci, BF::STCIEN, 16, 3, enable_stc_interrupts);
 
 #[test]
 fn can_seek() {
-    let mut found_data = [0;32];
+    let mut found_data = [0; 32];
     found_data[0] = (BF::STC >> 8) as u8;
     found_data[1] = BF::STC as u8;
-    let mut seeking_data = [0;32];
+    let mut seeking_data = [0; 32];
     seeking_data[16] = (BF::SEEK >> 8) as u8;
     seeking_data[17] = BF::SEEK as u8;
-    let mut seeking_found_data = [0;32];
+    let mut seeking_found_data = [0; 32];
     seeking_found_data[0] = (BF::STC >> 8) as u8;
     seeking_found_data[1] = BF::STC as u8;
     seeking_found_data[16] = (BF::SEEK >> 8) as u8;
     seeking_found_data[17] = BF::SEEK as u8;
     let transactions = [
-        I2cTrans::read(DEV_ADDR, [0;32].to_vec()),
-        I2cTrans::write(
-            DEV_ADDR,
-            vec![(BF::SEEK>> 8) as u8, BF::SEEK as u8],
-        ),
+        I2cTrans::read(DEV_ADDR, [0; 32].to_vec()),
+        I2cTrans::write(DEV_ADDR, vec![(BF::SEEK >> 8) as u8, BF::SEEK as u8]),
         I2cTrans::read(DEV_ADDR, seeking_data.to_vec()),
         I2cTrans::read(DEV_ADDR, seeking_found_data.to_vec()),
-        I2cTrans::write(
-            DEV_ADDR,
-            vec![0, 0],
-        ),
+        I2cTrans::write(DEV_ADDR, vec![0, 0]),
         I2cTrans::read(DEV_ADDR, found_data.to_vec()),
-        I2cTrans::read(DEV_ADDR, [0;32].to_vec()),
+        I2cTrans::read(DEV_ADDR, [0; 32].to_vec()),
     ];
     let mut dev = new_si4703(&transactions);
     block!(dev.seek()).unwrap();
     destroy(dev);
+}
+
+#[test]
+fn can_seek_with_stc_int_pin() {
+    let mut found_data = [0; 32];
+    found_data[0] = (BF::STC >> 8) as u8;
+    found_data[1] = BF::STC as u8;
+    let mut seeking_data = [0; 32];
+    seeking_data[16] = (BF::SEEK >> 8) as u8;
+    seeking_data[17] = BF::SEEK as u8;
+    seeking_data[20] = (BF::STCIEN >> 8) as u8;
+    seeking_data[21] = BF::STCIEN as u8 | 1 << 2;
+    let mut seeking_found_data = [0; 32];
+    seeking_found_data[0] = (BF::STC >> 8) as u8;
+    seeking_found_data[1] = BF::STC as u8;
+    seeking_found_data[16] = (BF::SEEK >> 8) as u8;
+    seeking_found_data[17] = BF::SEEK as u8;
+    let transactions = [
+        I2cTrans::read(DEV_ADDR, [0; 32].to_vec()),
+        I2cTrans::write(
+            DEV_ADDR,
+            vec![
+                (BF::SEEK >> 8) as u8,
+                BF::SEEK as u8,
+                0,
+                0,
+                (BF::STCIEN >> 8) as u8,
+                BF::STCIEN as u8 | 1 << 2,
+            ],
+        ),
+        I2cTrans::read(DEV_ADDR, seeking_data.to_vec()),
+        // this time STC bit is (incorrectly) not set
+        I2cTrans::read(DEV_ADDR, seeking_found_data.to_vec()),
+        I2cTrans::write(DEV_ADDR, vec![0, 0]),
+        I2cTrans::read(DEV_ADDR, found_data.to_vec()),
+        I2cTrans::read(DEV_ADDR, [0; 32].to_vec()),
+    ];
+    let pin_trans = [
+        PinTrans::get(PinState::High),
+        PinTrans::get(PinState::Low), // this time STC bit is (incorrectly) not set
+        PinTrans::get(PinState::Low),
+    ];
+    let mut pin = PinMock::new(&pin_trans);
+    let mut dev = new_si4703(&transactions);
+    block!(dev.seek_with_stc_int_pin(&mut pin)).unwrap();
+    destroy(dev);
+    pin.done()
 }
