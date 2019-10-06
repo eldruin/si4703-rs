@@ -7,8 +7,10 @@ pub struct BitFlags;
 impl BitFlags {
     pub const SKMODE: u16 = 1 << 10;
     pub const SEEKUP: u16 = 1 << 9;
+    pub const SEEK: u16 = 1 << 8;
     pub const DE: u16 = 1 << 11;
     pub const STCIEN: u16 = 1 << 14;
+    pub const STC: u16 = 1 << 14;
 }
 
 #[allow(unused)]

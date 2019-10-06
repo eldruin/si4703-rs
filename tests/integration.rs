@@ -1,5 +1,7 @@
 extern crate embedded_hal_mock as hal;
 extern crate si470x;
+#[macro_use]
+extern crate nb;
 use hal::i2c::Transaction as I2cTrans;
 use si470x::{DeEmphasis, Error, Gpio2Config, SeekDirection, SeekMode};
 
@@ -102,3 +104,36 @@ write_test!(gpio2_low, 2 << 2, 16, 3, set_gpio2, Gpio2Config::Low);
 
 write_test!(dis_stci, 0, 16, 3, disable_stc_interrupts);
 write_test!(en_stci, BF::STCIEN, 16, 3, enable_stc_interrupts);
+
+#[test]
+fn can_seek() {
+    let mut found_data = [0;32];
+    found_data[0] = (BF::STC >> 8) as u8;
+    found_data[1] = BF::STC as u8;
+    let mut seeking_data = [0;32];
+    seeking_data[16] = (BF::SEEK >> 8) as u8;
+    seeking_data[17] = BF::SEEK as u8;
+    let mut seeking_found_data = [0;32];
+    seeking_found_data[0] = (BF::STC >> 8) as u8;
+    seeking_found_data[1] = BF::STC as u8;
+    seeking_found_data[16] = (BF::SEEK >> 8) as u8;
+    seeking_found_data[17] = BF::SEEK as u8;
+    let transactions = [
+        I2cTrans::read(DEV_ADDR, [0;32].to_vec()),
+        I2cTrans::write(
+            DEV_ADDR,
+            vec![(BF::SEEK>> 8) as u8, BF::SEEK as u8],
+        ),
+        I2cTrans::read(DEV_ADDR, seeking_data.to_vec()),
+        I2cTrans::read(DEV_ADDR, seeking_found_data.to_vec()),
+        I2cTrans::write(
+            DEV_ADDR,
+            vec![0, 0],
+        ),
+        I2cTrans::read(DEV_ADDR, found_data.to_vec()),
+        I2cTrans::read(DEV_ADDR, [0;32].to_vec()),
+    ];
+    let mut dev = new_si4703(&transactions);
+    block!(dev.seek()).unwrap();
+    destroy(dev);
+}

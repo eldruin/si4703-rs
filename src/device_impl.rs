@@ -12,14 +12,17 @@ impl Register {
     const SYSCONFIG1: usize = 0x4;
     const SYSCONFIG2: usize = 0x5;
     const TEST1: usize = 0x7;
+    const STATUSRSSI: usize = 0xA;
 }
 
 struct BitFlags;
 impl BitFlags {
     const DMUTE: u16 = 1 << 14;
+    const STC: u16 = 1 << 14;
     const DE: u16 = 1 << 11;
     const SKMODE: u16 = 1 << 10;
     const SEEKUP: u16 = 1 << 9;
+    const SEEK: u16 = 1 << 8;
     const ENABLE: u16 = 1;
     const STCIEN: u16 = 1 << 14;
 }
@@ -171,6 +174,39 @@ where
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
+    /// Seek
+    ///
+    /// It is not recommended to call this again this while the seeking
+    /// is not finished. It should be waited on the STC interrupt pin.
+    pub fn seek(&mut self) -> nb::Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        let seek = (regs[Register::POWERCFG] & BitFlags::SEEK) != 0;
+        let stc = (regs[Register::STATUSRSSI] & BitFlags::STC) != 0;
+
+        match (self.is_seeking, seek, stc) {
+            (false, false, false) => {
+                // Start seeking
+                regs[Register::POWERCFG] |= BitFlags::SEEK;
+                self.write_powercfg(regs[Register::POWERCFG])
+                    .map_err(nb::Error::Other)?;
+                self.is_seeking = true;
+                Err(nb::Error::WouldBlock)
+            }
+            (true, true, true) => {
+                // Found
+                regs[Register::POWERCFG] &= !(BitFlags::SEEK);
+                self.write_powercfg(regs[Register::POWERCFG])
+                    .map_err(nb::Error::Other)?;
+                // Wait for device to clear STC
+                Err(nb::Error::WouldBlock)
+            }
+            (true, false, false) => {
+                self.is_seeking = false;
+                Ok(())
+            }
+            (_, _, _) => Err(nb::Error::WouldBlock),
+        }
+    }
     fn read_powercfg(&mut self) -> Result<u16, Error<E>> {
         const OFFSET: usize = 0xA;
         let mut data = [0; 32];
