@@ -24,7 +24,7 @@ travis-ci = { repository = "eldruin/si470x-rs", branch = "master" }
 coveralls = { repository = "eldruin/si470x-rs", branch = "master", service = "github" }
 
 [dependencies]
-embedded-hal = "0.2.3"
+embedded-hal = { version = "0.2.3", features = ["unproven"] }
 nb = "0.1"
 
 [dev-dependencies]
