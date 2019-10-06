@@ -10,6 +10,7 @@ struct Register;
 impl Register {
     const POWERCFG: usize = 0x2;
     const SYSCONFIG1: usize = 0x4;
+    const SYSCONFIG2: usize = 0x5;
     const TEST1: usize = 0x7;
 }
 
@@ -124,6 +125,19 @@ where
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
+    /// Set the volume [0..15]
+    ///
+    /// For volume values greater than 15, `Error::InvalidInputData`
+    /// will be returned.
+    pub fn set_volume(&mut self, volume: u8) -> Result<(), Error<E>> {
+        if volume > 15 {
+            return Err(Error::InvalidInputData);
+        }
+        let mut regs = self.read_registers()?;
+        regs[Register::SYSCONFIG2] &= 0xFFF0;
+        regs[Register::SYSCONFIG2] |= u16::from(volume);
+        self.write_registers(&regs[0..=Register::SYSCONFIG2])
+    }
 
     fn read_powercfg(&mut self) -> Result<u16, Error<E>> {
         const OFFSET: usize = 0xA;

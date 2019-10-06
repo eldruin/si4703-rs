@@ -18,3 +18,25 @@ pub fn new_si4703(transactions: &[I2cTrans]) -> Si470x<I2cMock, ic::Si4703> {
 pub fn destroy<IC>(dev: Si470x<I2cMock, IC>) {
     dev.destroy().done();
 }
+
+#[macro_export]
+macro_rules! assert_invalid_input_data {
+    ($result:expr) => {
+        match $result {
+            Err(Error::InvalidInputData) => (),
+            _ => panic!("InvalidInputData error not returned."),
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! set_invalid_test {
+    ($name:ident, $create_method:ident, $method:ident $(, $value:expr)*) => {
+        #[test]
+        fn $name() {
+            let mut dev = $create_method(&[]);
+            assert_invalid_input_data!(dev.$method($($value),*));
+            destroy(dev);
+        }
+    };
+}

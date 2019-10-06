@@ -54,6 +54,8 @@ pub use device_impl::reset;
 pub enum Error<E> {
     /// I²C bus communication error
     I2C(E),
+    /// Invalid input data provided
+    InvalidInputData,
 }
 
 /// IC markers
