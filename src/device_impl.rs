@@ -1,4 +1,4 @@
-use super::{ic, DeEmphasis, Error, Si470x};
+use super::{ic, DeEmphasis, Error, SeekDirection, SeekMode, Si470x};
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
 use hal::blocking::i2c;
@@ -17,6 +17,8 @@ struct BitFlags;
 impl BitFlags {
     const DMUTE: u16 = 1 << 14;
     const DE: u16 = 1 << 11;
+    const SKMODE: u16 = 1 << 10;
+    const SEEKUP: u16 = 1 << 9;
     const ENABLE: u16 = 1;
 }
 
@@ -94,6 +96,23 @@ where
         self.write_powercfg(powercfg & !BitFlags::DMUTE)
     }
 
+    /// Configure seeking
+    pub fn configure_seek(
+        &mut self,
+        mode: SeekMode,
+        direction: SeekDirection,
+    ) -> Result<(), Error<E>> {
+        let powercfg = self.read_powercfg()?;
+        let powercfg = match mode {
+            SeekMode::Wrap => powercfg | BitFlags::SKMODE,
+            SeekMode::NoWrap => powercfg & !BitFlags::SKMODE,
+        };
+        let powercfg = match direction {
+            SeekDirection::Up => powercfg | BitFlags::SEEKUP,
+            SeekDirection::Down => powercfg & !BitFlags::SEEKUP,
+        };
+        self.write_powercfg(powercfg)
+    }
 
     /// Set de-emphasis
     pub fn set_deemphasis(&mut self, de: DeEmphasis) -> Result<(), Error<E>> {

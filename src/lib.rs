@@ -71,6 +71,23 @@ pub struct Si470x<I2C, IC> {
     _ic: PhantomData<IC>,
 }
 
+/// Seek mode
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SeekMode {
+    /// Wrap at the end of the band (default)
+    Wrap,
+    /// Stop at the end of the band
+    NoWrap,
+}
+
+/// Seek direction
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SeekDirection {
+    /// Down (default)
+    Down,
+    /// Up
+    Up,
+}
 
 /// De-emphasis
 #[derive(Debug, Clone, Copy, PartialEq)]
