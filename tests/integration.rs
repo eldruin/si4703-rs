@@ -33,7 +33,7 @@ fn can_enable() {
     destroy(dev);
 }
 
-macro_rules! write_register_test {
+macro_rules! write_test {
     ($name:ident, $value:expr, $read_reg_count:expr, $write_reg_count:expr, $method:ident $(, $arg:expr)*) => {
         #[test]
         fn $name() {
@@ -52,7 +52,7 @@ macro_rules! write_register_test {
 
 macro_rules! write_powercfg_test {
     ($name:ident, $value:expr, $method:ident $(, $arg:expr)*) => {
-        write_register_test!($name, $value, 9, 1, $method $(, $arg)*);
+        write_test!($name, $value, 9, 1, $method $(, $arg)*);
     };
 }
 
@@ -87,9 +87,9 @@ write_powercfg_test!(
     SeekDirection::Up
 );
 
-write_register_test!(set_de_75, 0, 16, 3, set_deemphasis, DeEmphasis::Us75);
-write_register_test!(set_de_50, BF::DE, 16, 3, set_deemphasis, DeEmphasis::Us50);
+write_test!(set_de_75, 0, 16, 3, set_deemphasis, DeEmphasis::Us75);
+write_test!(set_de_50, BF::DE, 16, 3, set_deemphasis, DeEmphasis::Us50);
 
-write_register_test!(set_vol_min, 0, 16, 4, set_volume, 0);
-write_register_test!(set_vol_max, 0xF, 16, 4, set_volume, 0xF);
+write_test!(set_vol_min, 0, 16, 4, set_volume, 0);
+write_test!(set_vol_max, 0xF, 16, 4, set_volume, 0xF);
 set_invalid_test!(cannot_set_too_high_vol, new_si4703, set_volume, 0x10);
