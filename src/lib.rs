@@ -47,6 +47,7 @@ extern crate embedded_hal as hal;
 extern crate nb;
 
 mod device_impl;
+mod register_access;
 pub use device_impl::reset;
 
 /// Errors in this crate
