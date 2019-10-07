@@ -151,6 +151,17 @@ pub enum RdsMode {
     Verbose,
 }
 
+/// Channel spacing
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ChannelSpacing {
+    /// 200 kHz (USA, Australia) (default)
+    Khz200,
+    /// 100 kHz (Europe, Japan)
+    Khz100,
+    /// 50 kHz
+    Khz50,
+}
+
 mod private {
     use super::ic;
     pub trait Sealed {}

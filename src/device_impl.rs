@@ -1,6 +1,6 @@
 use super::{
-    ic, BitFlags, DeEmphasis, Error, ErrorWithPin, Gpio2Config, Register, SeekDirection, SeekMode,
-    SeekingState, Si470x,
+    ic, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio2Config, Register,
+    SeekDirection, SeekMode, SeekingState, Si470x,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
@@ -122,6 +122,19 @@ where
         regs[Register::SYSCONFIG2] &= 0xFFF0;
         regs[Register::SYSCONFIG2] |= u16::from(volume);
         self.write_registers(&regs[0..=Register::SYSCONFIG2])
+    }
+
+    /// Set channel spacing
+    pub fn set_channel_spacing(&mut self, spacing: ChannelSpacing) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        let mask = match spacing {
+            ChannelSpacing::Khz200 => 0,
+            ChannelSpacing::Khz100 => 1,
+            ChannelSpacing::Khz50 => 2,
+        };
+        regs[Register::SYSCONFIG2] &= !(0b11 << 4);
+        regs[Register::SYSCONFIG2] |= mask << 4;
+        self.write_registers(&regs[..=Register::SYSCONFIG2])
     }
 
     /// Enable generating STC interrupts.

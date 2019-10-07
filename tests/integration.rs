@@ -4,7 +4,7 @@ extern crate si470x;
 extern crate nb;
 use hal::i2c::Transaction as I2cTrans;
 use hal::pin::{Mock as PinMock, State as PinState, Transaction as PinTrans};
-use si470x::{DeEmphasis, Error, Gpio2Config, SeekDirection, SeekMode};
+use si470x::{ChannelSpacing as Spacing, DeEmphasis, Error, Gpio2Config, SeekDirection, SeekMode};
 
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
@@ -79,6 +79,10 @@ write_test!(set_de_50, BF::DE, 16, 3, set_deemphasis, DeEmphasis::Us50);
 write_test!(set_vol_min, 0, 16, 4, set_volume, 0);
 write_test!(set_vol_max, 0xF, 16, 4, set_volume, 0xF);
 set_invalid_test!(cannot_set_too_high_vol, new_si4703, set_volume, 0x10);
+
+write_test!(spc_200, 0, 16, 4, set_channel_spacing, Spacing::Khz200);
+write_test!(spc_100, 1 << 4, 16, 4, set_channel_spacing, Spacing::Khz100);
+write_test!(spc_50, 2 << 4, 16, 4, set_channel_spacing, Spacing::Khz50);
 
 const STC_RDS_INT: Gpio2Config = Gpio2Config::StcRdsInterrupt;
 write_test!(gpio2_hi, 0, 16, 3, set_gpio2, Gpio2Config::HighImpedance);
