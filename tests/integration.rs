@@ -36,23 +36,6 @@ fn can_enable() {
     destroy(dev);
 }
 
-macro_rules! write_test {
-    ($name:ident, $value:expr, $read_reg_count:expr, $write_reg_count:expr, $method:ident $(, $arg:expr)*) => {
-        #[test]
-        fn $name() {
-            let mut write = [0; $write_reg_count*2];
-            write[($write_reg_count-1)*2] = ($value >> 8) as u8;
-            write[($write_reg_count-1)*2+1] = $value as u8;
-            let transactions = [
-                I2cTrans::read(DEV_ADDR, [0;$read_reg_count*2].to_vec()),
-                I2cTrans::write(DEV_ADDR, write.to_vec())];
-            let mut dev = new_si4703(&transactions);
-            dev.$method($($arg),*).unwrap();
-            destroy(dev);
-        }
-    };
-}
-
 macro_rules! write_powercfg_test {
     ($name:ident, $value:expr, $method:ident $(, $arg:expr)*) => {
         write_test!($name, $value, 9, 1, $method $(, $arg)*);

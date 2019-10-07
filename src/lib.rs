@@ -47,6 +47,7 @@ extern crate embedded_hal as hal;
 extern crate nb;
 
 mod device_impl;
+mod rds;
 mod register_access;
 pub use device_impl::reset;
 use register_access::{BitFlags, Register};
@@ -76,6 +77,15 @@ pub mod ic {
     /// Used for Si4703 devices
     pub struct Si4703(());
 }
+
+/// markers
+#[doc(hidden)]
+pub mod marker {
+    use super::private;
+    pub trait WithRds: private::Sealed {}
+}
+
+impl marker::WithRds for ic::Si4703 {}
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 enum SeekingState {
@@ -130,4 +140,20 @@ pub enum Gpio2Config {
     High,
     /// Low
     Low,
+}
+
+/// RDS mode
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum RdsMode {
+    /// Standard (default)
+    Standard,
+    /// Verbose
+    Verbose,
+}
+
+mod private {
+    use super::ic;
+    pub trait Sealed {}
+
+    impl Sealed for ic::Si4703 {}
 }

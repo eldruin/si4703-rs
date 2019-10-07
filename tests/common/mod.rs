@@ -4,6 +4,7 @@ use si470x::{ic, Si470x};
 pub const DEV_ADDR: u8 = 0x10;
 
 pub struct BitFlags;
+#[allow(unused)]
 impl BitFlags {
     pub const SKMODE: u16 = 1 << 10;
     pub const SEEKUP: u16 = 1 << 9;
@@ -11,6 +12,8 @@ impl BitFlags {
     pub const DE: u16 = 1 << 11;
     pub const STCIEN: u16 = 1 << 14;
     pub const STC: u16 = 1 << 14;
+    pub const RDS: u16 = 1 << 12;
+    pub const RDSM: u16 = 1 << 11;
 }
 
 #[allow(unused)]
@@ -39,6 +42,24 @@ macro_rules! set_invalid_test {
         fn $name() {
             let mut dev = $create_method(&[]);
             assert_invalid_input_data!(dev.$method($($value),*));
+            destroy(dev);
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! write_test {
+    ($name:ident, $value:expr, $read_reg_count:expr, $write_reg_count:expr, $method:ident $(, $arg:expr)*) => {
+        #[test]
+        fn $name() {
+            let mut write = [0; $write_reg_count*2];
+            write[($write_reg_count-1)*2] = ($value >> 8) as u8;
+            write[($write_reg_count-1)*2+1] = $value as u8;
+            let transactions = [
+                I2cTrans::read(DEV_ADDR, [0;$read_reg_count*2].to_vec()),
+                I2cTrans::write(DEV_ADDR, write.to_vec())];
+            let mut dev = new_si4703(&transactions);
+            dev.$method($($arg),*).unwrap();
             destroy(dev);
         }
     };
