@@ -3,9 +3,27 @@ use hal::blocking::i2c;
 
 const DEVICE_ADDRESS: u8 = 0x10;
 
-struct Register;
+pub struct Register;
 impl Register {
-    const POWERCFG: usize = 0x2;
+    pub const POWERCFG: usize = 0x2;
+    pub const SYSCONFIG1: usize = 0x4;
+    pub const SYSCONFIG2: usize = 0x5;
+    pub const TEST1: usize = 0x7;
+    pub const STATUSRSSI: usize = 0xA;
+}
+
+pub struct BitFlags;
+impl BitFlags {
+    pub const DMUTE: u16 = 1 << 14;
+    pub const STC: u16 = 1 << 14;
+    pub const DE: u16 = 1 << 11;
+    pub const SKMODE: u16 = 1 << 10;
+    pub const SEEKUP: u16 = 1 << 9;
+    pub const SEEK: u16 = 1 << 8;
+    pub const ENABLE: u16 = 1;
+    pub const STCIEN: u16 = 1 << 14;
+    pub const RDS: u16 = 1 << 12;
+    pub const RDSM: u16 = 1 << 11;
 }
 
 impl<I2C, E, IC> Si470x<I2C, IC>

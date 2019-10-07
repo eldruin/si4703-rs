@@ -1,32 +1,12 @@
 use super::{
-    ic, DeEmphasis, Error, ErrorWithPin, Gpio2Config, SeekDirection, SeekMode, SeekingState, Si470x,
+    ic, BitFlags, DeEmphasis, Error, ErrorWithPin, Gpio2Config, Register, SeekDirection, SeekMode,
+    SeekingState, Si470x,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
 use hal::blocking::i2c;
 use hal::digital::v2::InputPin;
 use hal::digital::v2::OutputPin;
-
-struct Register;
-impl Register {
-    const POWERCFG: usize = 0x2;
-    const SYSCONFIG1: usize = 0x4;
-    const SYSCONFIG2: usize = 0x5;
-    const TEST1: usize = 0x7;
-    const STATUSRSSI: usize = 0xA;
-}
-
-struct BitFlags;
-impl BitFlags {
-    const DMUTE: u16 = 1 << 14;
-    const STC: u16 = 1 << 14;
-    const DE: u16 = 1 << 11;
-    const SKMODE: u16 = 1 << 10;
-    const SEEKUP: u16 = 1 << 9;
-    const SEEK: u16 = 1 << 8;
-    const ENABLE: u16 = 1;
-    const STCIEN: u16 = 1 << 14;
-}
 
 /// Reset the device and select I2C communication
 ///
@@ -244,8 +224,8 @@ where
                             .map_err(nb::Error::Other)?;
                     }
                     self.seeking_state = SeekingState::Seeking;
-                Err(nb::Error::WouldBlock)
-            }
+                    Err(nb::Error::WouldBlock)
+                }
                 (SeekingState::Seeking, true, true) => {
                     regs[Register::POWERCFG] &= !(BitFlags::SEEK);
                     self.write_powercfg_bare_err(regs[Register::POWERCFG])
@@ -256,10 +236,10 @@ where
                 }
                 (SeekingState::WaitingForStcToClear, false, false) => {
                     self.seeking_state = SeekingState::Idle;
-                Ok(())
+                    Ok(())
+                }
+                (_, _, _) => Err(nb::Error::WouldBlock),
             }
-            (_, _, _) => Err(nb::Error::WouldBlock),
         }
-    }
     }
 }

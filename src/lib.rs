@@ -49,6 +49,7 @@ extern crate nb;
 mod device_impl;
 mod register_access;
 pub use device_impl::reset;
+use register_access::{BitFlags, Register};
 
 /// Errors in this crate
 #[derive(Debug)]
