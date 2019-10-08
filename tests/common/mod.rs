@@ -12,6 +12,7 @@ impl BitFlags {
     pub const DE: u16 = 1 << 11;
     pub const STCIEN: u16 = 1 << 14;
     pub const STC: u16 = 1 << 14;
+    pub const SF_BL: u16 = 1 << 13;
     pub const RDS: u16 = 1 << 12;
     pub const RDSM: u16 = 1 << 11;
 }
@@ -26,12 +27,19 @@ pub fn destroy<IC>(dev: Si470x<I2cMock, IC>) {
 }
 
 #[macro_export]
-macro_rules! assert_invalid_input_data {
-    ($result:expr) => {
+macro_rules! assert_error {
+    ($result:expr, $error:ident::$variant:ident) => {
         match $result {
-            Err(Error::InvalidInputData) => (),
+            Err($error::$variant) => (),
             _ => panic!("InvalidInputData error not returned."),
         }
+    };
+}
+
+#[macro_export]
+macro_rules! assert_invalid_input_data {
+    ($result:expr) => {
+        assert_error!($result, Error::InvalidInputData)
     };
 }
 
@@ -62,5 +70,12 @@ macro_rules! write_test {
             dev.$method($($arg),*).unwrap();
             destroy(dev);
         }
+    };
+}
+
+#[macro_export]
+macro_rules! write_powercfg_test {
+    ($name:ident, $value:expr, $method:ident $(, $arg:expr)*) => {
+        write_test!($name, $value, 9, 1, $method $(, $arg)*);
     };
 }

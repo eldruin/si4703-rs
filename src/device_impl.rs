@@ -176,6 +176,7 @@ where
         let mut regs = self.read_registers()?;
         let seek = (regs[Register::POWERCFG] & BitFlags::SEEK) != 0;
         let stc = (regs[Register::STATUSRSSI] & BitFlags::STC) != 0;
+        let failed = (regs[Register::STATUSRSSI] & BitFlags::SF_BL) != 0;
 
         match (self.seeking_state, seek, stc) {
             (SeekingState::Idle, false, false) => {
@@ -189,12 +190,16 @@ where
                 regs[Register::POWERCFG] &= !(BitFlags::SEEK);
                 self.write_powercfg(regs[Register::POWERCFG])
                     .map_err(nb::Error::Other)?;
-                self.seeking_state = SeekingState::WaitingForStcToClear;
+                self.seeking_state = SeekingState::WaitingForStcToClear(!failed);
                 Err(nb::Error::WouldBlock)
             }
-            (SeekingState::WaitingForStcToClear, false, false) => {
+            (SeekingState::WaitingForStcToClear(success), false, false) => {
                 self.seeking_state = SeekingState::Idle;
-                Ok(())
+                if success {
+                    Ok(())
+                } else {
+                    Err(nb::Error::Other(Error::SeekFailed))
+                }
             }
             (_, _, _) => Err(nb::Error::WouldBlock),
         }
@@ -219,6 +224,7 @@ where
             let mut regs = self.read_registers_bare_err().map_err(ErrorWithPin::I2C)?;
             let seek = (regs[Register::POWERCFG] & BitFlags::SEEK) != 0;
             let stc = (regs[Register::STATUSRSSI] & BitFlags::STC) != 0;
+            let failed = (regs[Register::STATUSRSSI] & BitFlags::SF_BL) != 0;
 
             match (self.seeking_state, seek, stc) {
                 (SeekingState::Idle, false, false) => {
@@ -244,12 +250,16 @@ where
                     self.write_powercfg_bare_err(regs[Register::POWERCFG])
                         .map_err(ErrorWithPin::I2C)
                         .map_err(nb::Error::Other)?;
-                    self.seeking_state = SeekingState::WaitingForStcToClear;
+                    self.seeking_state = SeekingState::WaitingForStcToClear(!failed);
                     Err(nb::Error::WouldBlock)
                 }
-                (SeekingState::WaitingForStcToClear, false, false) => {
+                (SeekingState::WaitingForStcToClear(success), false, false) => {
                     self.seeking_state = SeekingState::Idle;
-                    Ok(())
+                    if success {
+                        Ok(())
+                    } else {
+                        Err(nb::Error::Other(ErrorWithPin::SeekFailed))
+                    }
                 }
                 (_, _, _) => Err(nb::Error::WouldBlock),
             }

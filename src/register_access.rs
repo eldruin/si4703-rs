@@ -16,6 +16,7 @@ pub struct BitFlags;
 impl BitFlags {
     pub const DMUTE: u16 = 1 << 14;
     pub const STC: u16 = 1 << 14;
+    pub const SF_BL: u16 = 1 << 13;
     pub const DE: u16 = 1 << 11;
     pub const SKMODE: u16 = 1 << 10;
     pub const SEEKUP: u16 = 1 << 9;

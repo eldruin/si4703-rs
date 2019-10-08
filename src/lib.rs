@@ -59,6 +59,8 @@ pub enum Error<E> {
     I2C(E),
     /// Invalid input data provided
     InvalidInputData,
+    /// Seek operation failed / Band limit reached
+    SeekFailed,
 }
 
 /// Errors for operations involving I2C communication as well
@@ -69,6 +71,8 @@ pub enum ErrorWithPin<CommE, PinE> {
     I2C(CommE),
     /// Error while communicating with pin
     Pin(PinE),
+    /// Seek operation failed / Band limit reached
+    SeekFailed,
 }
 
 /// IC markers
@@ -91,7 +95,7 @@ impl marker::WithRds for ic::Si4703 {}
 enum SeekingState {
     Idle,
     Seeking,
-    WaitingForStcToClear,
+    WaitingForStcToClear(bool),
 }
 
 /// Si470x device driver
