@@ -177,6 +177,15 @@ pub enum ChannelSpacing {
     Khz50,
 }
 
+/// Output mode
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum OutputMode {
+    /// Stereo (default)
+    Stereo,
+    /// Mono
+    Mono,
+}
+
 mod private {
     use super::ic;
     pub trait Sealed {}

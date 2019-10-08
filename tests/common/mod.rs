@@ -6,6 +6,7 @@ pub const DEV_ADDR: u8 = 0x10;
 pub struct BitFlags;
 #[allow(unused)]
 impl BitFlags {
+    pub const MONO: u16 = 1 << 13;
     pub const SKMODE: u16 = 1 << 10;
     pub const SEEKUP: u16 = 1 << 9;
     pub const SEEK: u16 = 1 << 8;

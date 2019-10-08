@@ -1,7 +1,7 @@
 extern crate embedded_hal_mock as hal;
 extern crate si470x;
 use hal::i2c::Transaction as I2cTrans;
-use si470x::{Band, ChannelSpacing as Spacing, DeEmphasis, Error, Gpio2Config};
+use si470x::{Band, ChannelSpacing as Spacing, DeEmphasis, Error, Gpio2Config, OutputMode};
 
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
@@ -35,6 +35,9 @@ fn can_enable() {
 
 write_powercfg_test!(can_unmute, 0x4000_u16, unmute);
 write_powercfg_test!(can_mute, 0x0, mute);
+
+write_powercfg_test!(set_stereo, 0, set_output_mode, OutputMode::Stereo);
+write_powercfg_test!(set_mono, BF::MONO, set_output_mode, OutputMode::Mono);
 
 write_test!(set_de_75, 0, 16, 3, set_deemphasis, DeEmphasis::Us75);
 write_test!(set_de_50, BF::DE, 16, 3, set_deemphasis, DeEmphasis::Us50);

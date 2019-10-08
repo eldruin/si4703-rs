@@ -15,6 +15,7 @@ impl Register {
 pub struct BitFlags;
 impl BitFlags {
     pub const DMUTE: u16 = 1 << 14;
+    pub const MONO: u16 = 1 << 13;
     pub const STC: u16 = 1 << 14;
     pub const SF_BL: u16 = 1 << 13;
     pub const DE: u16 = 1 << 11;

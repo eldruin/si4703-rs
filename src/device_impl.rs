@@ -1,6 +1,6 @@
 use super::{
-    ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio2Config, Register,
-    SeekDirection, SeekMode, SeekingState, Si470x,
+    ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio2Config, OutputMode,
+    Register, SeekDirection, SeekMode, SeekingState, Si470x,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
@@ -80,6 +80,16 @@ where
     pub fn mute(&mut self) -> Result<(), Error<E>> {
         let powercfg = self.read_powercfg()?;
         self.write_powercfg(powercfg & !BitFlags::DMUTE)
+    }
+
+    /// Set output mode: Stereo/Mono
+    pub fn set_output_mode(&mut self, mode: OutputMode) -> Result<(), Error<E>> {
+        let powercfg = self.read_powercfg()?;
+        let powercfg = match mode {
+            OutputMode::Stereo => powercfg & !BitFlags::MONO,
+            OutputMode::Mono => powercfg | BitFlags::MONO,
+        };
+        self.write_powercfg(powercfg)
     }
 
     /// Configure seeking
