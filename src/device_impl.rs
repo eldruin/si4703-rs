@@ -1,5 +1,5 @@
 use super::{
-    ic, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio2Config, Register,
+    ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio2Config, Register,
     SeekDirection, SeekMode, SeekingState, Si470x,
 };
 use core::marker::PhantomData;
@@ -122,6 +122,19 @@ where
         regs[Register::SYSCONFIG2] &= 0xFFF0;
         regs[Register::SYSCONFIG2] |= u16::from(volume);
         self.write_registers(&regs[0..=Register::SYSCONFIG2])
+    }
+
+    /// Set band
+    pub fn set_band(&mut self, band: Band) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        let mask = match band {
+            Band::Mhz875_108 => 0,
+            Band::Mhz76_108 => 1,
+            Band::Mhz76_90 => 2,
+        };
+        regs[Register::SYSCONFIG2] &= !(0b11 << 6);
+        regs[Register::SYSCONFIG2] |= mask << 6;
+        self.write_registers(&regs[..=Register::SYSCONFIG2])
     }
 
     /// Set channel spacing

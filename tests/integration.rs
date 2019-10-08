@@ -1,7 +1,7 @@
 extern crate embedded_hal_mock as hal;
 extern crate si470x;
 use hal::i2c::Transaction as I2cTrans;
-use si470x::{ChannelSpacing as Spacing, DeEmphasis, Error, Gpio2Config};
+use si470x::{Band, ChannelSpacing as Spacing, DeEmphasis, Error, Gpio2Config};
 
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
@@ -42,6 +42,10 @@ write_test!(set_de_50, BF::DE, 16, 3, set_deemphasis, DeEmphasis::Us50);
 write_test!(set_vol_min, 0, 16, 4, set_volume, 0);
 write_test!(set_vol_max, 0xF, 16, 4, set_volume, 0xF);
 set_invalid_test!(cannot_set_too_high_vol, new_si4703, set_volume, 0x10);
+
+write_test!(band_87_5_108, 0, 16, 4, set_band, Band::Mhz875_108);
+write_test!(band_76_108, 1 << 6, 16, 4, set_band, Band::Mhz76_108);
+write_test!(band_76_90, 2 << 6, 16, 4, set_band, Band::Mhz76_90);
 
 write_test!(spc_200, 0, 16, 4, set_channel_spacing, Spacing::Khz200);
 write_test!(spc_100, 1 << 4, 16, 4, set_channel_spacing, Spacing::Khz100);

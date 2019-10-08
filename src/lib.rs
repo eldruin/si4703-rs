@@ -155,6 +155,17 @@ pub enum RdsMode {
     Verbose,
 }
 
+/// Band
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Band {
+    /// 87.5-108 Mhz (USA, Europe) (default)
+    Mhz875_108,
+    /// 76 - 108 MHz (Japan wide band)
+    Mhz76_108,
+    /// 76 - 90 MHz (Japan)
+    Mhz76_90,
+}
+
 /// Channel spacing
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ChannelSpacing {
