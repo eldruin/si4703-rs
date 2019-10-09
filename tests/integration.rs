@@ -62,3 +62,29 @@ write_test!(gpio2_low, 2 << 2, 16, 3, set_gpio2, Gpio2Config::Low);
 
 write_test!(dis_stci, 0, 16, 3, disable_stc_interrupts);
 write_test!(en_stci, BF::STCIEN, 16, 3, enable_stc_interrupts);
+
+macro_rules! get_channel_test {
+    ($name:ident, $sysconfig2:expr, $readchan:expr, $value:expr) => {
+        #[test]
+        fn $name() {
+            let mut data = [0; 32];
+            data[2] = ($readchan >> 8) as u8;
+            data[3] = $readchan as u8;
+            data[11 * 2] = ($sysconfig2 >> 8) as u8;
+            data[11 * 2 + 1] = $sysconfig2 as u8;
+            let transactions = [I2cTrans::read(DEV_ADDR, data.to_vec())];
+            let mut dev = new_si4703(&transactions);
+            let channel = dev.get_channel().unwrap();
+            assert!(($value - 0.2) < channel);
+            assert!(($value + 0.2) > channel);
+            destroy(dev);
+        }
+    };
+}
+
+get_channel_test!(get_channel_87_base, 0, 0, 87.5);
+get_channel_test!(get_channel_87_base_readchan, 0, 100_u16, 87.5 + 100.0 * 0.2);
+get_channel_test!(get_channel_76_base, 1 << 6, 100_u16, 76.0 + 100.0 * 0.2);
+get_channel_test!(get_channel_0_1_sp, 1 << 4, 100_u16, 87.5 + 100.0 * 0.1);
+get_channel_test!(get_channel_0_05_sp, 2 << 4, 100_u16, 87.5 + 100.0 * 0.05);
+get_channel_test!(get_chan_comb, 1 << 6 | 2 << 4, 100_u16, 76.0 + 100.0 * 0.05);

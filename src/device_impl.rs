@@ -288,4 +288,19 @@ where
             }
         }
     }
+
+    /// Read the channel
+    pub fn get_channel(&mut self) -> Result<f32, Error<E>> {
+        let regs = self.read_registers()?;
+        let spacing = (regs[Register::SYSCONFIG2] & (0b11 << 4)) >> 4;
+        let spacing = match spacing {
+            0 => 0.2,
+            1 => 0.1,
+            _ => 0.05,
+        };
+        let base = regs[Register::SYSCONFIG2] & (0b11 << 6);
+        let base = if base == 0 { 87.5 } else { 76.0 };
+        let channel = f32::from(regs[Register::READCHAN] & 0x3FF);
+        Ok(channel * spacing + base)
+    }
 }

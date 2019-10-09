@@ -10,6 +10,7 @@ impl Register {
     pub const SYSCONFIG2: usize = 0x5;
     pub const TEST1: usize = 0x7;
     pub const STATUSRSSI: usize = 0xA;
+    pub const READCHAN: usize = 0xB;
 }
 
 pub struct BitFlags;
