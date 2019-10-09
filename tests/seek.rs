@@ -134,7 +134,7 @@ fn can_seek_with_stc_int_pin() {
     ];
     let mut pin = PinMock::new(&pin_trans);
     let mut dev = new_si4703(&transactions);
-    block!(dev.seek_with_stc_int_pin(&mut pin)).unwrap();
+    block!(dev.seek_with_stc_int_pin(&pin)).unwrap();
     destroy(dev);
     pin.done()
 }
@@ -182,7 +182,7 @@ fn can_fail_seeking_with_stc_int_pin() {
     let mut pin = PinMock::new(&pin_trans);
     let mut dev = new_si4703(&transactions);
     assert_error!(
-        block!(dev.seek_with_stc_int_pin(&mut pin)),
+        block!(dev.seek_with_stc_int_pin(&pin)),
         ErrorWithPin::SeekFailed
     );
     destroy(dev);

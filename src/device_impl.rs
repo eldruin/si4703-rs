@@ -234,7 +234,7 @@ where
     /// STC interrupts if appropriate.
     pub fn seek_with_stc_int_pin<PinE, P: InputPin<Error = PinE>>(
         &mut self,
-        stc_int_pin: &mut P,
+        stc_int_pin: &P,
     ) -> nb::Result<(), ErrorWithPin<E, PinE>> {
         if self.seeking_state == SeekingState::Seeking
             && stc_int_pin
