@@ -5,6 +5,7 @@ const DEVICE_ADDRESS: u8 = 0x10;
 
 pub struct Register;
 impl Register {
+    pub const DEVICE_ID: usize = 0x0;
     pub const POWERCFG: usize = 0x2;
     pub const SYSCONFIG1: usize = 0x4;
     pub const SYSCONFIG2: usize = 0x5;

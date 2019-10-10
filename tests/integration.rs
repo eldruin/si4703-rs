@@ -94,3 +94,16 @@ get_channel_test!(get_channel_76_base, 1 << 6, 100_u16, 76.0 + 100.0 * 0.2);
 get_channel_test!(get_channel_0_1_sp, 1 << 4, 100_u16, 87.5 + 100.0 * 0.1);
 get_channel_test!(get_channel_0_05_sp, 2 << 4, 100_u16, 87.5 + 100.0 * 0.05);
 get_channel_test!(get_chan_comb, 1 << 6 | 2 << 4, 100_u16, 76.0 + 100.0 * 0.05);
+
+#[test]
+fn can_read_device_id() {
+    let mut data = [0; 32];
+    data[6 * 2] = 0x12;
+    data[6 * 2 + 1] = 0x42;
+    let transactions = [I2cTrans::read(DEV_ADDR, data.to_vec())];
+    let mut dev = new_si4703(&transactions);
+    let (pn, mfid) = dev.get_device_id().unwrap();
+    assert_eq!(pn, 1);
+    assert_eq!(mfid, 0x242);
+    destroy(dev);
+}

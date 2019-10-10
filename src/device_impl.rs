@@ -314,4 +314,15 @@ where
         let channel = f32::from(regs[Register::READCHAN] & 0x3FF);
         Ok(channel * spacing + base)
     }
+
+    /// Get the device ID
+    ///
+    /// Returns the part number and manufacturer ID as a tuple
+    pub fn get_device_id(&mut self) -> Result<(u8, u16), Error<E>> {
+        let regs = self.read_registers()?;
+        let device_id = regs[Register::DEVICE_ID];
+        let pn = ((device_id & 0xF000) >> 12) as u8;
+        let mfid = device_id & 0xFFF;
+        Ok((pn, mfid))
+    }
 }
