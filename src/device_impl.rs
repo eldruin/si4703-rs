@@ -96,6 +96,18 @@ where
         self.write_powercfg(powercfg & !BitFlags::DMUTE)
     }
 
+    /// Enable softmute
+    pub fn enable_softmute(&mut self) -> Result<(), Error<E>> {
+        let powercfg = self.read_powercfg()?;
+        self.write_powercfg(powercfg & !BitFlags::DSMUTE)
+    }
+
+    /// Disable softmute
+    pub fn disable_softmute(&mut self) -> Result<(), Error<E>> {
+        let powercfg = self.read_powercfg()?;
+        self.write_powercfg(powercfg | BitFlags::DSMUTE)
+    }
+
     /// Set output mode: Stereo/Mono
     pub fn set_output_mode(&mut self, mode: OutputMode) -> Result<(), Error<E>> {
         let powercfg = self.read_powercfg()?;

@@ -39,8 +39,11 @@ fn can_enable() {
     destroy(dev);
 }
 
-write_powercfg_test!(can_unmute, 0x4000_u16, unmute);
+write_powercfg_test!(can_unmute, BF::DMUTE, unmute);
 write_powercfg_test!(can_mute, 0x0, mute);
+
+write_powercfg_test!(can_dis_smute, BF::DSMUTE, disable_softmute);
+write_powercfg_test!(can_en_smute, 0x0, enable_softmute);
 
 write_powercfg_test!(set_stereo, 0, set_output_mode, OutputMode::Stereo);
 write_powercfg_test!(set_mono, BF::MONO, set_output_mode, OutputMode::Mono);
