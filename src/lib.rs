@@ -78,6 +78,8 @@ pub enum ErrorWithPin<CommE, PinE> {
 /// IC markers
 #[doc(hidden)]
 pub mod ic {
+    /// Used for Si4702 devices
+    pub struct Si4702(());
     /// Used for Si4703 devices
     pub struct Si4703(());
 }
@@ -190,5 +192,6 @@ mod private {
     use super::ic;
     pub trait Sealed {}
 
+    impl Sealed for ic::Si4702 {}
     impl Sealed for ic::Si4703 {}
 }
