@@ -107,3 +107,17 @@ fn can_read_device_id() {
     assert_eq!(mfid, 0x242);
     destroy(dev);
 }
+
+#[test]
+fn can_read_chip_id() {
+    let mut data = [0; 32];
+    data[7 * 2] = 0x85;
+    data[7 * 2 + 1] = 0xA5;
+    let transactions = [I2cTrans::read(DEV_ADDR, data.to_vec())];
+    let mut dev = new_si4703(&transactions);
+    let (rev, device, firmware) = dev.get_chip_id().unwrap();
+    assert_eq!(rev, 33);
+    assert_eq!(device, 6);
+    assert_eq!(firmware, 37);
+    destroy(dev);
+}
