@@ -1,6 +1,6 @@
 use super::{
     ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
-    OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si470x,
+    Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si470x,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
@@ -221,6 +221,20 @@ where
         };
         regs[Register::SYSCONFIG1] &= 0xFFF3;
         regs[Register::SYSCONFIG1] |= mask << 2;
+        self.write_registers(&regs[0..=Register::SYSCONFIG1])
+    }
+
+    /// Set the GPIO3
+    pub fn set_gpio3(&mut self, config: Gpio3Config) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        let mask = match config {
+            Gpio3Config::HighImpedance => 0,
+            Gpio3Config::MonoStereoIndicator => 1,
+            Gpio3Config::Low => 2,
+            Gpio3Config::High => 3,
+        };
+        regs[Register::SYSCONFIG1] &= 0xFFCF;
+        regs[Register::SYSCONFIG1] |= mask << 4;
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 

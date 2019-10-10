@@ -159,6 +159,19 @@ pub enum Gpio2Config {
     Low,
 }
 
+/// GPIO3 configuration
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Gpio3Config {
+    /// High impedance (default)
+    HighImpedance,
+    /// Mono/Stereo indicator (logic low for mono, high for stereo)
+    MonoStereoIndicator,
+    /// High
+    High,
+    /// Low
+    Low,
+}
+
 /// RDS mode
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RdsMode {

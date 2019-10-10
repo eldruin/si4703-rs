@@ -2,8 +2,8 @@ extern crate embedded_hal_mock as hal;
 extern crate si470x;
 use hal::i2c::{Mock as I2cMock, Transaction as I2cTrans};
 use si470x::{
-    Band, ChannelSpacing as Spacing, DeEmphasis, Error, Gpio1Config, Gpio2Config, OutputMode,
-    Si470x,
+    Band, ChannelSpacing as Spacing, DeEmphasis, Error, Gpio1Config, Gpio2Config, Gpio3Config,
+    OutputMode, Si470x,
 };
 
 mod common;
@@ -75,6 +75,12 @@ write_test!(gpio2_hi, 0, 16, 3, set_gpio2, Gpio2Config::HighImpedance);
 write_test!(gpio2_int, 1 << 2, 16, 3, set_gpio2, STC_RDS_INT);
 write_test!(gpio2_high, 3 << 2, 16, 3, set_gpio2, Gpio2Config::High);
 write_test!(gpio2_low, 2 << 2, 16, 3, set_gpio2, Gpio2Config::Low);
+
+const STEREO_IND: Gpio3Config = Gpio3Config::MonoStereoIndicator;
+write_test!(gpio3_hi, 0, 16, 3, set_gpio3, Gpio3Config::HighImpedance);
+write_test!(gpio3_stereo, 1 << 4, 16, 3, set_gpio3, STEREO_IND);
+write_test!(gpio3_high, 3 << 4, 16, 3, set_gpio3, Gpio3Config::High);
+write_test!(gpio3_low, 2 << 4, 16, 3, set_gpio3, Gpio3Config::Low);
 
 write_test!(dis_stci, 0, 16, 3, disable_stc_interrupts);
 write_test!(en_stci, BF::STCIEN, 16, 3, enable_stc_interrupts);
