@@ -135,6 +135,17 @@ pub enum DeEmphasis {
     Us50,
 }
 
+/// GPIO1 configuration
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Gpio1Config {
+    /// High impedance (default)
+    HighImpedance,
+    /// High
+    High,
+    /// Low
+    Low,
+}
+
 /// GPIO2 configuration
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Gpio2Config {

@@ -1,7 +1,10 @@
 extern crate embedded_hal_mock as hal;
 extern crate si470x;
 use hal::i2c::{Mock as I2cMock, Transaction as I2cTrans};
-use si470x::{Band, ChannelSpacing as Spacing, DeEmphasis, Error, Gpio2Config, OutputMode, Si470x};
+use si470x::{
+    Band, ChannelSpacing as Spacing, DeEmphasis, Error, Gpio1Config, Gpio2Config, OutputMode,
+    Si470x,
+};
 
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
@@ -62,6 +65,10 @@ write_test!(band_76_90, 2 << 6, 16, 4, set_band, Band::Mhz76_90);
 write_test!(spc_200, 0, 16, 4, set_channel_spacing, Spacing::Khz200);
 write_test!(spc_100, 1 << 4, 16, 4, set_channel_spacing, Spacing::Khz100);
 write_test!(spc_50, 2 << 4, 16, 4, set_channel_spacing, Spacing::Khz50);
+
+write_test!(gpio1_hi, 0, 16, 3, set_gpio1, Gpio1Config::HighImpedance);
+write_test!(gpio1_high, 3, 16, 3, set_gpio1, Gpio1Config::High);
+write_test!(gpio1_low, 2, 16, 3, set_gpio1, Gpio1Config::Low);
 
 const STC_RDS_INT: Gpio2Config = Gpio2Config::StcRdsInterrupt;
 write_test!(gpio2_hi, 0, 16, 3, set_gpio2, Gpio2Config::HighImpedance);

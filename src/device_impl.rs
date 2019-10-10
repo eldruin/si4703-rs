@@ -1,6 +1,6 @@
 use super::{
-    ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio2Config, OutputMode,
-    Register, SeekDirection, SeekMode, SeekingState, Si470x,
+    ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
+    OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si470x,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
@@ -194,6 +194,19 @@ where
     pub fn disable_stc_interrupts(&mut self) -> Result<(), Error<E>> {
         let mut regs = self.read_registers()?;
         regs[Register::SYSCONFIG1] &= !BitFlags::STCIEN;
+        self.write_registers(&regs[0..=Register::SYSCONFIG1])
+    }
+
+    /// Set the GPIO1
+    pub fn set_gpio1(&mut self, config: Gpio1Config) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        let mask = match config {
+            Gpio1Config::HighImpedance => 0,
+            Gpio1Config::Low => 2,
+            Gpio1Config::High => 3,
+        };
+        regs[Register::SYSCONFIG1] &= 0xFFFC;
+        regs[Register::SYSCONFIG1] |= mask;
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
