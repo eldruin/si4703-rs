@@ -9,34 +9,48 @@ use si470x::{Error, ErrorWithPin, SeekDirection, SeekMode};
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
 
-write_powercfg_test!(
-    config_seek_nowrap_down,
-    0x0,
-    configure_seek,
-    SeekMode::NoWrap,
-    SeekDirection::Down
-);
-write_powercfg_test!(
-    config_seek_wrap_down,
-    BF::SKMODE,
-    configure_seek,
-    SeekMode::Wrap,
-    SeekDirection::Down
-);
-write_powercfg_test!(
-    config_seek_nowrap_up,
-    BF::SEEKUP,
-    configure_seek,
-    SeekMode::NoWrap,
-    SeekDirection::Up
-);
-write_powercfg_test!(
-    config_seek_wrap_up,
-    BF::SKMODE | BF::SEEKUP,
-    configure_seek,
-    SeekMode::Wrap,
-    SeekDirection::Up
-);
+macro_rules! seek_test {
+    ($name:ident, $mode:ident, $direction:ident, $powercfg:expr) => {
+        #[test]
+        fn $name() {
+            let powercfg = $powercfg | BF::SEEK;
+            let mut found_data = [0; 32];
+            found_data[0] = (BF::STC >> 8) as u8;
+            found_data[1] = BF::STC as u8;
+            let mut seeking_data = [0; 32];
+            seeking_data[16] = (powercfg >> 8) as u8;
+            seeking_data[17] = powercfg as u8;
+            let mut seeking_found_data = [0; 32];
+            seeking_found_data[0] = (BF::STC >> 8) as u8;
+            seeking_found_data[1] = BF::STC as u8;
+            seeking_found_data[16] = (powercfg >> 8) as u8;
+            seeking_found_data[17] = powercfg as u8;
+            let transactions = [
+                I2cTrans::read(DEV_ADDR, [0; 32].to_vec()),
+                I2cTrans::write(DEV_ADDR, vec![(powercfg >> 8) as u8, powercfg as u8]),
+                I2cTrans::read(DEV_ADDR, seeking_data.to_vec()),
+                I2cTrans::read(DEV_ADDR, seeking_found_data.to_vec()),
+                I2cTrans::write(
+                    DEV_ADDR,
+                    vec![
+                        ((powercfg & !BF::SEEK) >> 8) as u8,
+                        (powercfg & !BF::SEEK) as u8,
+                    ],
+                ),
+                I2cTrans::read(DEV_ADDR, found_data.to_vec()),
+                I2cTrans::read(DEV_ADDR, [0; 32].to_vec()),
+            ];
+            let mut dev = new_si4703(&transactions);
+            block!(dev.seek(SeekMode::$mode, SeekDirection::$direction)).unwrap();
+            destroy(dev);
+        }
+    };
+}
+
+seek_test!(seek_nowrap_down, NoWrap, Down, 0);
+seek_test!(seek_wrap_down, Wrap, Down, BF::SKMODE);
+seek_test!(seek_nowrap_up, NoWrap, Up, BF::SEEKUP);
+seek_test!(seek_wrap_up, Wrap, Up, BF::SKMODE | BF::SEEKUP);
 
 #[test]
 fn can_seek() {
@@ -61,7 +75,7 @@ fn can_seek() {
         I2cTrans::read(DEV_ADDR, [0; 32].to_vec()),
     ];
     let mut dev = new_si4703(&transactions);
-    block!(dev.seek()).unwrap();
+    block!(dev.seek(SeekMode::NoWrap, SeekDirection::Down)).unwrap();
     destroy(dev);
 }
 
@@ -88,7 +102,10 @@ fn can_fail_seeking() {
         I2cTrans::read(DEV_ADDR, [0; 32].to_vec()),
     ];
     let mut dev = new_si4703(&transactions);
-    assert_error!(block!(dev.seek()), Error::SeekFailed);
+    assert_error!(
+        block!(dev.seek(SeekMode::NoWrap, SeekDirection::Down)),
+        Error::SeekFailed
+    );
     destroy(dev);
 }
 
@@ -134,7 +151,7 @@ fn can_seek_with_stc_int_pin() {
     ];
     let mut pin = PinMock::new(&pin_trans);
     let mut dev = new_si4703(&transactions);
-    block!(dev.seek_with_stc_int_pin(&pin)).unwrap();
+    block!(dev.seek_with_stc_int_pin(SeekMode::NoWrap, SeekDirection::Down, &pin)).unwrap();
     destroy(dev);
     pin.done()
 }
@@ -182,7 +199,7 @@ fn can_fail_seeking_with_stc_int_pin() {
     let mut pin = PinMock::new(&pin_trans);
     let mut dev = new_si4703(&transactions);
     assert_error!(
-        block!(dev.seek_with_stc_int_pin(&pin)),
+        block!(dev.seek_with_stc_int_pin(SeekMode::NoWrap, SeekDirection::Down, &pin)),
         ErrorWithPin::SeekFailed
     );
     destroy(dev);

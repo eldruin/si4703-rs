@@ -92,13 +92,7 @@ where
         self.write_powercfg(powercfg)
     }
 
-    /// Configure seeking
-    pub fn configure_seek(
-        &mut self,
-        mode: SeekMode,
-        direction: SeekDirection,
-    ) -> Result<(), Error<E>> {
-        let powercfg = self.read_powercfg()?;
+    fn configure_seek(powercfg: u16, mode: SeekMode, direction: SeekDirection) -> u16 {
         let powercfg = match mode {
             SeekMode::Wrap => powercfg | BitFlags::SKMODE,
             SeekMode::NoWrap => powercfg & !BitFlags::SKMODE,
@@ -107,7 +101,7 @@ where
             SeekDirection::Up => powercfg | BitFlags::SEEKUP,
             SeekDirection::Down => powercfg & !BitFlags::SEEKUP,
         };
-        self.write_powercfg(powercfg)
+        powercfg
     }
 
     /// Set de-emphasis
@@ -195,7 +189,7 @@ where
     ///
     /// It is not recommended to call this again this while the seeking
     /// is not finished. It should be waited on the STC interrupt pin.
-    pub fn seek(&mut self) -> nb::Result<(), Error<E>> {
+    pub fn seek(&mut self, mode: SeekMode, direction: SeekDirection) -> nb::Result<(), Error<E>> {
         let mut regs = self.read_registers()?;
         let seek = (regs[Register::POWERCFG] & BitFlags::SEEK) != 0;
         let stc = (regs[Register::STATUSRSSI] & BitFlags::STC) != 0;
@@ -203,9 +197,9 @@ where
 
         match (self.seeking_state, seek, stc) {
             (SeekingState::Idle, false, false) => {
-                regs[Register::POWERCFG] |= BitFlags::SEEK;
-                self.write_powercfg(regs[Register::POWERCFG])
-                    .map_err(nb::Error::Other)?;
+                let powercfg = regs[Register::POWERCFG] | BitFlags::SEEK;
+                let powercfg = Self::configure_seek(powercfg, mode, direction);
+                self.write_powercfg(powercfg).map_err(nb::Error::Other)?;
                 self.seeking_state = SeekingState::Seeking;
                 Err(nb::Error::WouldBlock)
             }
@@ -234,6 +228,8 @@ where
     /// STC interrupts if appropriate.
     pub fn seek_with_stc_int_pin<PinE, P: InputPin<Error = PinE>>(
         &mut self,
+        mode: SeekMode,
+        direction: SeekDirection,
         stc_int_pin: &P,
     ) -> nb::Result<(), ErrorWithPin<E, PinE>> {
         if self.seeking_state == SeekingState::Seeking
@@ -251,7 +247,8 @@ where
 
             match (self.seeking_state, seek, stc) {
                 (SeekingState::Idle, false, false) => {
-                    regs[Register::POWERCFG] |= BitFlags::SEEK;
+                    let powercfg = regs[Register::POWERCFG] | BitFlags::SEEK;
+                    regs[Register::POWERCFG] = Self::configure_seek(powercfg, mode, direction);
                     let previous_sysconfig1 = regs[Register::SYSCONFIG1];
                     regs[Register::SYSCONFIG1] &= 0xFFF3;
                     regs[Register::SYSCONFIG1] |= 1 << 2;
