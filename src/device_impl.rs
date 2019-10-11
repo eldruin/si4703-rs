@@ -1,6 +1,6 @@
 use super::{
     ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
-    Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si470x,
+    Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si4703,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
@@ -25,13 +25,13 @@ pub fn reset<E, RSTP: OutputPin<Error = E>, SDAP: OutputPin<Error = E>, DELAY: D
     Ok(())
 }
 
-impl<I2C, E> Si470x<I2C, ic::Si4702>
+impl<I2C, E> Si4703<I2C, ic::Si4702>
 where
     I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
 {
     /// Create new instance of a Si4703 device
     pub fn new_si4702(i2c: I2C) -> Self {
-        Si470x {
+        Si4703 {
             i2c,
             seeking_state: SeekingState::Idle,
             _ic: PhantomData,
@@ -39,13 +39,13 @@ where
     }
 }
 
-impl<I2C, E> Si470x<I2C, ic::Si4703>
+impl<I2C, E> Si4703<I2C, ic::Si4703>
 where
     I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
 {
     /// Create new instance of a Si4703 device
     pub fn new_si4703(i2c: I2C) -> Self {
-        Si470x {
+        Si4703 {
             i2c,
             seeking_state: SeekingState::Idle,
             _ic: PhantomData,
@@ -53,14 +53,14 @@ where
     }
 }
 
-impl<I2C, IC> Si470x<I2C, IC> {
+impl<I2C, IC> Si4703<I2C, IC> {
     /// Destroy driver instance, return I²C bus instance.
     pub fn destroy(self) -> I2C {
         self.i2c
     }
 }
 
-impl<I2C, E, IC> Si470x<I2C, IC>
+impl<I2C, E, IC> Si4703<I2C, IC>
 where
     I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
 {

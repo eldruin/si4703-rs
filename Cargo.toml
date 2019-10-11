@@ -1,15 +1,15 @@
 [package]
-name = "si470x"
+name = "si4703"
 version = "0.1.0"
 authors = ["Diego Barrios Romero <eldruin@gmail.com>"]
-repository = "https://github.com/eldruin/si470x-rs"
+repository = "https://github.com/eldruin/si4703-rs"
 license = "MIT OR Apache-2.0"
-description = "Platform-agnostic Rust driver for the Si470x FM radio turner (receiver) family."
+description = "Platform-agnostic Rust driver for the Si4703 and Si4702 FM radio turners (receivers)."
 readme = "README.md"
 keywords = ["fm", "radio", "receiver", "turner", "embedded-hal-driver"]
 categories = ["embedded", "hardware-support", "no-std"]
-homepage = "https://github.com/eldruin/si470x-rs"
-documentation = "https://docs.rs/si470x"
+homepage = "https://github.com/eldruin/si4703-rs"
+documentation = "https://docs.rs/si4703"
 include = [
     "/**/*.rs",
     "/Cargo.toml",
@@ -20,8 +20,8 @@ include = [
 ]
 
 [badges]
-travis-ci = { repository = "eldruin/si470x-rs", branch = "master" }
-coveralls = { repository = "eldruin/si470x-rs", branch = "master", service = "github" }
+travis-ci = { repository = "eldruin/si4703-rs", branch = "master" }
+coveralls = { repository = "eldruin/si4703-rs", branch = "master", service = "github" }
 
 [dependencies]
 embedded-hal = { version = "0.2.3", features = ["unproven"] }

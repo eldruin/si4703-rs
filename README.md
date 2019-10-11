@@ -1,14 +1,14 @@
-# Rust Si470x FM Radio Turner (Receiver) Driver
+# Rust Si4703 FM Radio Turner (Receiver) Driver
 
 <!--TODO
-[![crates.io](https://img.shields.io/crates/v/si470x.svg)](https://crates.io/crates/si470x)
-[![Docs](https://docs.rs/si470x/badge.svg)](https://docs.rs/si470x)
+[![crates.io](https://img.shields.io/crates/v/si4703.svg)](https://crates.io/crates/si4703)
+[![Docs](https://docs.rs/si4703/badge.svg)](https://docs.rs/si4703)
 -->
-[![Build Status](https://travis-ci.org/eldruin/si470x-rs.svg?branch=master)](https://travis-ci.org/eldruin/si470x-rs)
-[![Coverage Status](https://coveralls.io/repos/github/eldruin/si470x-rs/badge.svg?branch=master)](https://coveralls.io/github/eldruin/si470x-rs?branch=master)
+[![Build Status](https://travis-ci.org/eldruin/si4703-rs.svg?branch=master)](https://travis-ci.org/eldruin/si4703-rs)
+[![Coverage Status](https://coveralls.io/repos/github/eldruin/si4703-rs/badge.svg?branch=master)](https://coveralls.io/github/eldruin/si4703-rs?branch=master)
 
-This is a platform agnostic Rust driver for the Si470x FM radio turner
-(receiver) family using the [`embedded-hal`] traits.
+This is a platform agnostic Rust driver for the Si4703 and Si4702 FM radio turners
+(receivers) using the [`embedded-hal`] traits.
 <!-- TODO
 This driver allows you to:
 -->
@@ -55,7 +55,7 @@ then instantiate the appropriate device.
 <!--TODO
 In the following example an instance of the device Si4703 will be created.
 Other devices can be created with similar methods like:
-`Si470x::new_si4702(...)`.
+`Si4703::new_si4702(...)`.
 -->
 Please find additional examples using hardware in this repository: [driver-examples]
 
@@ -69,7 +69,7 @@ Please find additional examples using hardware in this repository: [driver-examp
 ## Support
 
 For questions, issues, feature requests, and other changes, please file an
-[issue in the github project](https://github.com/eldruin/si470x-rs/issues).
+[issue in the github project](https://github.com/eldruin/si4703-rs/issues).
 
 ## License
 

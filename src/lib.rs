@@ -1,5 +1,5 @@
-//! This is a platform agnostic Rust driver for the Si470x FM radio
-//! turner (receiver) using the [`embedded-hal`] traits.
+//! This is a platform agnostic Rust driver for the Si4702 and Si4703 FM radio
+//! turners (receivers) using the [`embedded-hal`] traits.
 //!
 //! [`embedded-hal`]: https://github.com/rust-embedded/embedded-hal
 //!
@@ -100,9 +100,9 @@ enum SeekingState {
     WaitingForStcToClear(bool),
 }
 
-/// Si470x device driver
+/// Si4703 device driver
 #[derive(Debug)]
-pub struct Si470x<I2C, IC> {
+pub struct Si4703<I2C, IC> {
     i2c: I2C,
     seeking_state: SeekingState,
     _ic: PhantomData<IC>,

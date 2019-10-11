@@ -1,10 +1,10 @@
 extern crate embedded_hal_mock as hal;
-extern crate si470x;
+extern crate si4703;
 #[macro_use]
 extern crate nb;
 use hal::i2c::Transaction as I2cTrans;
 use hal::pin::{Mock as PinMock, State as PinState, Transaction as PinTrans};
-use si470x::{Error, ErrorWithPin, SeekDirection, SeekMode};
+use si4703::{Error, ErrorWithPin, SeekDirection, SeekMode};
 
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};

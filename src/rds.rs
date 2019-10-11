@@ -1,8 +1,8 @@
-use super::{marker, BitFlags, Error, RdsMode, Register, Si470x};
+use super::{marker, BitFlags, Error, RdsMode, Register, Si4703};
 
 use hal::blocking::i2c;
 
-impl<I2C, E, IC> Si470x<I2C, IC>
+impl<I2C, E, IC> Si4703<I2C, IC>
 where
     I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
     IC: marker::WithRds,

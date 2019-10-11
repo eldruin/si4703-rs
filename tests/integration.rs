@@ -1,9 +1,9 @@
 extern crate embedded_hal_mock as hal;
-extern crate si470x;
+extern crate si4703;
 use hal::i2c::{Mock as I2cMock, Transaction as I2cTrans};
-use si470x::{
+use si4703::{
     Band, ChannelSpacing as Spacing, DeEmphasis, Error, Gpio1Config, Gpio2Config, Gpio3Config,
-    OutputMode, Si470x,
+    OutputMode, Si4703,
 };
 
 mod common;
@@ -16,7 +16,7 @@ const DATA: [u8; 32] = [
 
 #[test]
 fn can_create_and_destroy_si4702() {
-    let dev = Si470x::new_si4702(I2cMock::new(&[]));
+    let dev = Si4703::new_si4702(I2cMock::new(&[]));
     destroy(dev);
 }
 

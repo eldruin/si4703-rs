@@ -1,4 +1,4 @@
-use super::{Error, Si470x};
+use super::{Error, Si4703};
 use hal::blocking::i2c;
 
 const DEVICE_ADDRESS: u8 = 0x10;
@@ -32,7 +32,7 @@ impl BitFlags {
     pub const RDSM: u16 = 1 << 11;
 }
 
-impl<I2C, E, IC> Si470x<I2C, IC>
+impl<I2C, E, IC> Si4703<I2C, IC>
 where
     I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
 {

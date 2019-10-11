@@ -1,7 +1,7 @@
 extern crate embedded_hal_mock as hal;
-extern crate si470x;
+extern crate si4703;
 use hal::i2c::Transaction as I2cTrans;
-use si470x::RdsMode;
+use si4703::RdsMode;
 
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
