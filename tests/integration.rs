@@ -3,7 +3,7 @@ extern crate si4703;
 use hal::i2c::{Mock as I2cMock, Transaction as I2cTrans};
 use si4703::{
     Band, ChannelSpacing as Spacing, DeEmphasis, Error, Gpio1Config, Gpio2Config, Gpio3Config,
-    OutputMode, Si4703,
+    OutputMode, Si4703, StereoToMonoBlendLevel as Blend,
 };
 
 mod common;
@@ -51,11 +51,46 @@ write_powercfg_test!(can_en_smute, 0x0, enable_softmute);
 write_powercfg_test!(set_stereo, 0, set_output_mode, OutputMode::Stereo);
 write_powercfg_test!(set_mono, BF::MONO, set_output_mode, OutputMode::Mono);
 
-write_test!(set_de_75, 0, 16, 3, set_deemphasis, DeEmphasis::Us75);
-write_test!(set_de_50, BF::DE, 16, 3, set_deemphasis, DeEmphasis::Us50);
+#[macro_export]
+macro_rules! write_syscfg1_test {
+    ($name:ident, $value:expr, $method:ident $(, $arg:expr)*) => {
+        write_test!($name, $value, 16, 3, $method $(, $arg)*);
+    };
+}
 
-write_test!(enable_agc, 0, 16, 3, enable_auto_gain_control);
-write_test!(disable_agc, BF::AGCD, 16, 3, disable_auto_gain_control);
+write_syscfg1_test!(set_de_75, 0, set_deemphasis, DeEmphasis::Us75);
+write_syscfg1_test!(set_de_50, BF::DE, set_deemphasis, DeEmphasis::Us50);
+
+write_syscfg1_test!(enable_agc, 0, enable_auto_gain_control);
+write_syscfg1_test!(disable_agc, BF::AGCD, disable_auto_gain_control);
+
+write_syscfg1_test!(
+    set_blend_default,
+    0,
+    set_stereo_to_mono_blend_level,
+    Blend::Dbuv31_49
+);
+
+write_syscfg1_test!(
+    set_blend_minus12db,
+    2 << 6,
+    set_stereo_to_mono_blend_level,
+    Blend::Dbuv19_37
+);
+
+write_syscfg1_test!(
+    set_blend_minus6db,
+    3 << 6,
+    set_stereo_to_mono_blend_level,
+    Blend::Dbuv25_43
+);
+
+write_syscfg1_test!(
+    set_blend_plus6b,
+    1 << 6,
+    set_stereo_to_mono_blend_level,
+    Blend::Dbuv37_55
+);
 
 write_test!(set_vol_min, 0, 16, 4, set_volume, 0);
 write_test!(set_vol_max, 0xF, 16, 4, set_volume, 0xF);

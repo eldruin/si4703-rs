@@ -212,6 +212,25 @@ pub enum OutputMode {
     Mono,
 }
 
+/// Stereo to mono blend level
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum StereoToMonoBlendLevel {
+    /// 19–37 RSSI dBμV (–12 dB)
+    Dbuv19_37,
+    /// 25–43 RSSI dBμV (–6 dB).
+    Dbuv25_43,
+    /// 31–49 RSSI dBμV (default)
+    Dbuv31_49,
+    /// 37–55 RSSI dBμV (+6 dB)
+    Dbuv37_55,
+}
+
+impl Default for StereoToMonoBlendLevel {
+    fn default() -> Self {
+        StereoToMonoBlendLevel::Dbuv31_49
+    }
+}
+
 mod private {
     use super::ic;
     pub trait Sealed {}

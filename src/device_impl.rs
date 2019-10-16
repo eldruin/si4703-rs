@@ -1,6 +1,7 @@
 use super::{
     ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
     Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si4703,
+    StereoToMonoBlendLevel,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
@@ -249,6 +250,23 @@ where
     pub fn disable_auto_gain_control(&mut self) -> Result<(), Error<E>> {
         let mut regs = self.read_registers()?;
         regs[Register::SYSCONFIG1] |= BitFlags::AGCD;
+        self.write_registers(&regs[0..=Register::SYSCONFIG1])
+    }
+
+    /// Set the stereo to mono blend level
+    pub fn set_stereo_to_mono_blend_level(
+        &mut self,
+        level: StereoToMonoBlendLevel,
+    ) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        let mask = match level {
+            StereoToMonoBlendLevel::Dbuv31_49 => 0,
+            StereoToMonoBlendLevel::Dbuv37_55 => 1,
+            StereoToMonoBlendLevel::Dbuv19_37 => 2,
+            StereoToMonoBlendLevel::Dbuv25_43 => 3,
+        };
+        regs[Register::SYSCONFIG1] &= 0xFF3F;
+        regs[Register::SYSCONFIG1] |= mask << 6;
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
