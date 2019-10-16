@@ -29,6 +29,7 @@ impl BitFlags {
     pub const ENABLE: u16 = 1;
     pub const STCIEN: u16 = 1 << 14;
     pub const RDS: u16 = 1 << 12;
+    pub const AGCD: u16 = 1 << 10;
     pub const RDSM: u16 = 1 << 11;
 }
 

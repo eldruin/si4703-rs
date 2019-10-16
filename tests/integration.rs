@@ -54,6 +54,9 @@ write_powercfg_test!(set_mono, BF::MONO, set_output_mode, OutputMode::Mono);
 write_test!(set_de_75, 0, 16, 3, set_deemphasis, DeEmphasis::Us75);
 write_test!(set_de_50, BF::DE, 16, 3, set_deemphasis, DeEmphasis::Us50);
 
+write_test!(enable_agc, 0, 16, 3, enable_auto_gain_control);
+write_test!(disable_agc, BF::AGCD, 16, 3, disable_auto_gain_control);
+
 write_test!(set_vol_min, 0, 16, 4, set_volume, 0);
 write_test!(set_vol_max, 0xF, 16, 4, set_volume, 0xF);
 set_invalid_test!(cannot_set_too_high_vol, new_si4703, set_volume, 0x10);

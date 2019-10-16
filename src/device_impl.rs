@@ -238,6 +238,20 @@ where
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
+    /// Enable automatic gain control (default).
+    pub fn enable_auto_gain_control(&mut self) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        regs[Register::SYSCONFIG1] &= !BitFlags::AGCD;
+        self.write_registers(&regs[0..=Register::SYSCONFIG1])
+    }
+
+    /// Disable automatic gain control.
+    pub fn disable_auto_gain_control(&mut self) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        regs[Register::SYSCONFIG1] |= BitFlags::AGCD;
+        self.write_registers(&regs[0..=Register::SYSCONFIG1])
+    }
+
     /// Seek
     ///
     /// It is not recommended to call this again this while the seeking
