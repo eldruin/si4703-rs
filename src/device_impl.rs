@@ -1,6 +1,6 @@
 use super::{
     ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
-    Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si4703,
+    Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si4703, SoftmuteRate,
     StereoToMonoBlendLevel, Volume,
 };
 use core::marker::PhantomData;
@@ -98,9 +98,19 @@ where
     }
 
     /// Enable softmute
-    pub fn enable_softmute(&mut self) -> Result<(), Error<E>> {
-        let powercfg = self.read_powercfg()?;
-        self.write_powercfg(powercfg & !BitFlags::DSMUTE)
+    pub fn enable_softmute(&mut self, rate: SoftmuteRate) -> Result<(), Error<E>> {
+        let rate_mask = match rate {
+            SoftmuteRate::Fastest => 0,
+            SoftmuteRate::Fast => 1,
+            SoftmuteRate::Slow => 2,
+            SoftmuteRate::Slowest => 3,
+        };
+
+        let mut regs = self.read_registers()?;
+        regs[Register::POWERCFG] &= !BitFlags::DSMUTE;
+        regs[Register::SYSCONFIG3] &= 0x3FFF;
+        regs[Register::SYSCONFIG3] |= rate_mask << 14;
+        self.write_registers(&regs[0..=Register::SYSCONFIG3])
     }
 
     /// Disable softmute
@@ -142,7 +152,7 @@ where
     }
 
     /// Set the volume
-    /// 
+    ///
     /// This will automatically activate or deactivate the extended volume
     /// range as appropriate.
     pub fn set_volume(&mut self, volume: Volume) -> Result<(), Error<E>> {

@@ -292,6 +292,19 @@ pub enum Volume {
     Dbfs0,
 }
 
+/// Softmute Attack/Recover Rate
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SoftmuteRate {
+    /// Fastest (default)
+    Fastest,
+    /// Fast
+    Fast,
+    /// Slow
+    Slow,
+    /// Slowest
+    Slowest,
+}
+
 impl Default for StereoToMonoBlendLevel {
     fn default() -> Self {
         StereoToMonoBlendLevel::Dbuv31_49
