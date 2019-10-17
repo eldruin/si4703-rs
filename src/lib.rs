@@ -225,6 +225,73 @@ pub enum StereoToMonoBlendLevel {
     Dbuv37_55,
 }
 
+/// Volume
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Volume {
+    /// Mute (0 volume) (default)
+    Mute,
+    /// –58 dBFS (extended volume range).
+    Dbfsm58,
+    /// –56 dBFS (extended volume range).
+    Dbfsm56,
+    /// –54 dBFS (extended volume range).
+    Dbfsm54,
+    /// –52 dBFS (extended volume range).
+    Dbfsm52,
+    /// –50 dBFS (extended volume range).
+    Dbfsm50,
+    /// –48 dBFS (extended volume range).
+    Dbfsm48,
+    /// –46 dBFS (extended volume range).
+    Dbfsm46,
+    /// –44 dBFS (extended volume range).
+    Dbfsm44,
+    /// –42 dBFS (extended volume range).
+    Dbfsm42,
+    /// –40 dBFS (extended volume range).
+    Dbfsm40,
+    /// –38 dBFS (extended volume range).
+    Dbfsm38,
+    /// –36 dBFS (extended volume range).
+    Dbfsm36,
+    /// –34 dBFS (extended volume range).
+    Dbfsm34,
+    /// –32 dBFS (extended volume range).
+    Dbfsm32,
+    /// –30 dBFS (extended volume range).
+    Dbfsm30,
+    /// –28 dBFS.
+    Dbfsm28,
+    /// –26 dBFS.
+    Dbfsm26,
+    /// –24 dBFS.
+    Dbfsm24,
+    /// –22 dBFS.
+    Dbfsm22,
+    /// –20 dBFS.
+    Dbfsm20,
+    /// –18 dBFS.
+    Dbfsm18,
+    /// –16 dBFS.
+    Dbfsm16,
+    /// –14 dBFS.
+    Dbfsm14,
+    /// –12 dBFS.
+    Dbfsm12,
+    /// –10 dBFS.
+    Dbfsm10,
+    /// –8 dBFS.
+    Dbfsm8,
+    /// –6 dBFS.
+    Dbfsm6,
+    /// –4 dBFS.
+    Dbfsm4,
+    /// –2 dBFS.
+    Dbfsm2,
+    /// 0 dBFS (maximum).
+    Dbfs0,
+}
+
 impl Default for StereoToMonoBlendLevel {
     fn default() -> Self {
         StereoToMonoBlendLevel::Dbuv31_49

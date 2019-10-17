@@ -1,7 +1,7 @@
 use super::{
     ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
     Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si4703,
-    StereoToMonoBlendLevel,
+    StereoToMonoBlendLevel, Volume,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
@@ -141,18 +141,57 @@ where
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
-    /// Set the volume [0..15]
-    ///
-    /// For volume values greater than 15, `Error::InvalidInputData`
-    /// will be returned.
-    pub fn set_volume(&mut self, volume: u8) -> Result<(), Error<E>> {
-        if volume > 15 {
-            return Err(Error::InvalidInputData);
-        }
+    /// Set the volume
+    /// 
+    /// This will automatically activate or deactivate the extended volume
+    /// range as appropriate.
+    pub fn set_volume(&mut self, volume: Volume) -> Result<(), Error<E>> {
+        let (volume_mask, volext) = match volume {
+            Volume::Mute => (0_u16, false),
+            Volume::Dbfsm58 => (1, true),
+            Volume::Dbfsm56 => (2, true),
+            Volume::Dbfsm54 => (3, true),
+            Volume::Dbfsm52 => (4, true),
+            Volume::Dbfsm50 => (5, true),
+            Volume::Dbfsm48 => (6, true),
+            Volume::Dbfsm46 => (7, true),
+            Volume::Dbfsm44 => (8, true),
+            Volume::Dbfsm42 => (9, true),
+            Volume::Dbfsm40 => (10, true),
+            Volume::Dbfsm38 => (11, true),
+            Volume::Dbfsm36 => (12, true),
+            Volume::Dbfsm34 => (13, true),
+            Volume::Dbfsm32 => (14, true),
+            Volume::Dbfsm30 => (15, true),
+            Volume::Dbfsm28 => (1, false),
+            Volume::Dbfsm26 => (2, false),
+            Volume::Dbfsm24 => (3, false),
+            Volume::Dbfsm22 => (4, false),
+            Volume::Dbfsm20 => (5, false),
+            Volume::Dbfsm18 => (6, false),
+            Volume::Dbfsm16 => (7, false),
+            Volume::Dbfsm14 => (8, false),
+            Volume::Dbfsm12 => (9, false),
+            Volume::Dbfsm10 => (10, false),
+            Volume::Dbfsm8 => (11, false),
+            Volume::Dbfsm6 => (12, false),
+            Volume::Dbfsm4 => (13, false),
+            Volume::Dbfsm2 => (14, false),
+            Volume::Dbfs0 => (15, false),
+        };
         let mut regs = self.read_registers()?;
         regs[Register::SYSCONFIG2] &= 0xFFF0;
-        regs[Register::SYSCONFIG2] |= u16::from(volume);
-        self.write_registers(&regs[0..=Register::SYSCONFIG2])
+        regs[Register::SYSCONFIG2] |= volume_mask;
+        if volume_mask == 0 {
+            self.write_registers(&regs[0..=Register::SYSCONFIG2])
+        } else {
+            if volext {
+                regs[Register::SYSCONFIG3] |= BitFlags::VOLEXT
+            } else {
+                regs[Register::SYSCONFIG3] &= !BitFlags::VOLEXT
+            }
+            self.write_registers(&regs[0..=Register::SYSCONFIG3])
+        }
     }
 
     /// Set band

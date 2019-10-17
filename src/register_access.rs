@@ -10,6 +10,7 @@ impl Register {
     pub const POWERCFG: usize = 0x2;
     pub const SYSCONFIG1: usize = 0x4;
     pub const SYSCONFIG2: usize = 0x5;
+    pub const SYSCONFIG3: usize = 0x6;
     pub const TEST1: usize = 0x7;
     pub const STATUSRSSI: usize = 0xA;
     pub const READCHAN: usize = 0xB;
@@ -31,6 +32,7 @@ impl BitFlags {
     pub const RDS: u16 = 1 << 12;
     pub const AGCD: u16 = 1 << 10;
     pub const RDSM: u16 = 1 << 11;
+    pub const VOLEXT: u16 = 1 << 8;
 }
 
 impl<I2C, E, IC> Si4703<I2C, IC>

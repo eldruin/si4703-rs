@@ -19,6 +19,7 @@ impl BitFlags {
     pub const RDS: u16 = 1 << 12;
     pub const AGCD: u16 = 1 << 10;
     pub const RDSM: u16 = 1 << 11;
+    pub const VOLEXT: u16 = 1 << 8;
 }
 
 #[allow(unused)]
@@ -67,6 +68,23 @@ macro_rules! write_test {
             let mut write = [0; $write_reg_count*2];
             write[($write_reg_count-1)*2] = ($value >> 8) as u8;
             write[($write_reg_count-1)*2+1] = $value as u8;
+            let transactions = [
+                I2cTrans::read(DEV_ADDR, [0;$read_reg_count*2].to_vec()),
+                I2cTrans::write(DEV_ADDR, write.to_vec())];
+            let mut dev = new_si4703(&transactions);
+            dev.$method($($arg),*).unwrap();
+            destroy(dev);
+        }
+    };
+    ($name:ident, $read_reg_count:expr, $first_write_reg_index:expr, $first_write_reg_value:expr,
+     $second_write_reg_index:expr, $second_write_reg_value:expr, $method:ident $(, $arg:expr)*) => {
+        #[test]
+        fn $name() {
+            let mut write = [0; ($second_write_reg_index+1)*2];
+            write[$first_write_reg_index*2] = ($first_write_reg_value >> 8) as u8;
+            write[$first_write_reg_index*2+1] = $first_write_reg_value as u8;
+            write[$second_write_reg_index*2] = ($second_write_reg_value >> 8) as u8;
+            write[$second_write_reg_index*2+1] = $second_write_reg_value as u8;
             let transactions = [
                 I2cTrans::read(DEV_ADDR, [0;$read_reg_count*2].to_vec()),
                 I2cTrans::write(DEV_ADDR, write.to_vec())];
