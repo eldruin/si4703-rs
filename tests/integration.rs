@@ -3,7 +3,7 @@ extern crate si4703;
 use hal::i2c::{Mock as I2cMock, Transaction as I2cTrans};
 use si4703::{
     Band, ChannelSpacing as Spacing, DeEmphasis, Gpio1Config, Gpio2Config, Gpio3Config, OutputMode,
-    Si4703, SoftmuteRate, StereoToMonoBlendLevel as Blend, Volume,
+    Si4703, SoftmuteAttenuation, SoftmuteRate, StereoToMonoBlendLevel as Blend, Volume,
 };
 
 mod common;
@@ -48,7 +48,7 @@ write_powercfg_test!(can_mute, 0x0, mute);
 write_powercfg_test!(can_dis_smute, BF::DSMUTE, disable_softmute);
 
 macro_rules! en_smute_test {
-    ($name:ident, $sysconfig3:expr, $rate:ident) => {
+    ($name:ident, $sysconfig3:expr, $rate:ident, $attenuation:ident) => {
         write_test!(
             $name,
             16,
@@ -57,15 +57,20 @@ macro_rules! en_smute_test {
             4,
             $sysconfig3,
             enable_softmute,
-            SoftmuteRate::$rate
+            SoftmuteRate::$rate,
+            SoftmuteAttenuation::$attenuation
         );
     };
 }
 
-en_smute_test!(en_smute_rate_fastest, 0, Fastest);
-en_smute_test!(en_smute_rate_fast, 1 << 14, Fast);
-en_smute_test!(en_smute_rate_slow, 2 << 14, Slow);
-en_smute_test!(en_smute_rate_slowest, 3 << 14, Slowest);
+en_smute_test!(en_smute_rate_fastest, 0, Fastest, Db16);
+en_smute_test!(en_smute_rate_fast, 1 << 14, Fast, Db16);
+en_smute_test!(en_smute_rate_slow, 2 << 14, Slow, Db16);
+en_smute_test!(en_smute_rate_slowest, 3 << 14, Slowest, Db16);
+en_smute_test!(en_smute_att_db14, 1 << 12, Fastest, Db14);
+en_smute_test!(en_smute_att_db12, 2 << 12, Fastest, Db12);
+en_smute_test!(en_smute_att_db10, 3 << 12, Fastest, Db10);
+en_smute_test!(en_smute_rate_slowest_att_db10, 0xF << 12, Slowest, Db10);
 
 write_powercfg_test!(set_stereo, 0, set_output_mode, OutputMode::Stereo);
 write_powercfg_test!(set_mono, BF::MONO, set_output_mode, OutputMode::Mono);

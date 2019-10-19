@@ -305,6 +305,19 @@ pub enum SoftmuteRate {
     Slowest,
 }
 
+/// Softmute Attenuation
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SoftmuteAttenuation {
+    /// 16 dB (default)
+    Db16,
+    /// 14 dB
+    Db14,
+    /// 12 dB
+    Db12,
+    /// 10 dB
+    Db10,
+}
+
 impl Default for StereoToMonoBlendLevel {
     fn default() -> Self {
         StereoToMonoBlendLevel::Dbuv31_49

@@ -1,7 +1,7 @@
 use super::{
     ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
-    Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si4703, SoftmuteRate,
-    StereoToMonoBlendLevel, Volume,
+    Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si4703,
+    SoftmuteAttenuation, SoftmuteRate, StereoToMonoBlendLevel, Volume,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
@@ -98,18 +98,28 @@ where
     }
 
     /// Enable softmute
-    pub fn enable_softmute(&mut self, rate: SoftmuteRate) -> Result<(), Error<E>> {
+    pub fn enable_softmute(
+        &mut self,
+        rate: SoftmuteRate,
+        attenuation: SoftmuteAttenuation,
+    ) -> Result<(), Error<E>> {
         let rate_mask = match rate {
             SoftmuteRate::Fastest => 0,
             SoftmuteRate::Fast => 1,
             SoftmuteRate::Slow => 2,
             SoftmuteRate::Slowest => 3,
         };
+        let attenuation_mask = match attenuation {
+            SoftmuteAttenuation::Db16 => 0,
+            SoftmuteAttenuation::Db14 => 1,
+            SoftmuteAttenuation::Db12 => 2,
+            SoftmuteAttenuation::Db10 => 3,
+        };
 
         let mut regs = self.read_registers()?;
         regs[Register::POWERCFG] &= !BitFlags::DSMUTE;
-        regs[Register::SYSCONFIG3] &= 0x3FFF;
-        regs[Register::SYSCONFIG3] |= rate_mask << 14;
+        regs[Register::SYSCONFIG3] &= 0x0FFF;
+        regs[Register::SYSCONFIG3] |= (rate_mask << 14) | (attenuation_mask << 12);
         self.write_registers(&regs[0..=Register::SYSCONFIG3])
     }
 
