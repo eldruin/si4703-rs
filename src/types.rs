@@ -63,6 +63,12 @@ pub enum SeekMode {
     NoWrap,
 }
 
+impl Default for SeekMode {
+    fn default() -> Self {
+        SeekMode::Wrap
+    }
+}
+
 /// Seek direction
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SeekDirection {
@@ -70,6 +76,12 @@ pub enum SeekDirection {
     Down,
     /// Up
     Up,
+}
+
+impl Default for SeekDirection {
+    fn default() -> Self {
+        SeekDirection::Down
+    }
 }
 
 /// De-emphasis
@@ -81,6 +93,12 @@ pub enum DeEmphasis {
     Us50,
 }
 
+impl Default for DeEmphasis {
+    fn default() -> Self {
+        DeEmphasis::Us75
+    }
+}
+
 /// GPIO1 configuration
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Gpio1Config {
@@ -90,6 +108,12 @@ pub enum Gpio1Config {
     High,
     /// Low
     Low,
+}
+
+impl Default for Gpio1Config {
+    fn default() -> Self {
+        Gpio1Config::HighImpedance
+    }
 }
 
 /// GPIO2 configuration
@@ -105,6 +129,12 @@ pub enum Gpio2Config {
     Low,
 }
 
+impl Default for Gpio2Config {
+    fn default() -> Self {
+        Gpio2Config::HighImpedance
+    }
+}
+
 /// GPIO3 configuration
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Gpio3Config {
@@ -118,6 +148,12 @@ pub enum Gpio3Config {
     Low,
 }
 
+impl Default for Gpio3Config {
+    fn default() -> Self {
+        Gpio3Config::HighImpedance
+    }
+}
+
 /// RDS mode
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RdsMode {
@@ -125,6 +161,12 @@ pub enum RdsMode {
     Standard,
     /// Verbose
     Verbose,
+}
+
+impl Default for RdsMode {
+    fn default() -> Self {
+        RdsMode::Standard
+    }
 }
 
 /// Band
@@ -138,6 +180,12 @@ pub enum Band {
     Mhz76_90,
 }
 
+impl Default for Band {
+    fn default() -> Self {
+        Band::Mhz875_108
+    }
+}
+
 /// Channel spacing
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ChannelSpacing {
@@ -149,6 +197,12 @@ pub enum ChannelSpacing {
     Khz50,
 }
 
+impl Default for ChannelSpacing {
+    fn default() -> Self {
+        ChannelSpacing::Khz200
+    }
+}
+
 /// Output mode
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum OutputMode {
@@ -156,6 +210,12 @@ pub enum OutputMode {
     Stereo,
     /// Mono
     Mono,
+}
+
+impl Default for OutputMode {
+    fn default() -> Self {
+        OutputMode::Stereo
+    }
 }
 
 /// Stereo to mono blend level
@@ -169,6 +229,12 @@ pub enum StereoToMonoBlendLevel {
     Dbuv31_49,
     /// 37–55 RSSI dBμV (+6 dB)
     Dbuv37_55,
+}
+
+impl Default for StereoToMonoBlendLevel {
+    fn default() -> Self {
+        StereoToMonoBlendLevel::Dbuv31_49
+    }
 }
 
 /// Volume
@@ -238,6 +304,12 @@ pub enum Volume {
     Dbfs0,
 }
 
+impl Default for Volume {
+    fn default() -> Self {
+        Volume::Mute
+    }
+}
+
 /// Softmute Attack/Recover Rate
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SoftmuteRate {
@@ -249,6 +321,12 @@ pub enum SoftmuteRate {
     Slow,
     /// Slowest
     Slowest,
+}
+
+impl Default for SoftmuteRate {
+    fn default() -> Self {
+        SoftmuteRate::Fastest
+    }
 }
 
 /// Softmute Attenuation
@@ -264,8 +342,36 @@ pub enum SoftmuteAttenuation {
     Db10,
 }
 
-impl Default for StereoToMonoBlendLevel {
+impl Default for SoftmuteAttenuation {
     fn default() -> Self {
-        StereoToMonoBlendLevel::Dbuv31_49
+        SoftmuteAttenuation::Db16
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    macro_rules! default_test {
+        ($name:ident, $type:ident, $default:ident) => {
+            #[test]
+            fn $name() {
+                assert_eq!($type::$default, $type::default());
+            }
+        };
+    }
+
+    default_test!(default_seek_mode, SeekMode, Wrap);
+    default_test!(default_seek_direction, SeekDirection, Down);
+    default_test!(default_de, DeEmphasis, Us75);
+    default_test!(default_gpio1, Gpio1Config, HighImpedance);
+    default_test!(default_gpio2, Gpio2Config, HighImpedance);
+    default_test!(default_gpio3, Gpio3Config, HighImpedance);
+    default_test!(default_rds_mode, RdsMode, Standard);
+    default_test!(default_band, Band, Mhz875_108);
+    default_test!(default_spacing, ChannelSpacing, Khz200);
+    default_test!(default_output_mode, OutputMode, Stereo);
+    default_test!(default_volume, Volume, Mute);
+    default_test!(default_softmute_att, SoftmuteAttenuation, Db16);
+    default_test!(default_softmute_rate, SoftmuteRate, Fastest);
+    default_test!(default_blend, StereoToMonoBlendLevel, Dbuv31_49);
 }
