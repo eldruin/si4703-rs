@@ -5,8 +5,6 @@ use core::marker::PhantomData;
 pub enum Error<E> {
     /// I²C bus communication error
     I2C(E),
-    /// Invalid input data provided
-    InvalidInputData,
     /// Seek operation failed / Band limit reached
     SeekFailed,
 }

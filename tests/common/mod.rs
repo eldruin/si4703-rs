@@ -42,13 +42,6 @@ macro_rules! assert_error {
 }
 
 #[macro_export]
-macro_rules! assert_invalid_input_data {
-    ($result:expr) => {
-        assert_error!($result, Error::InvalidInputData)
-    };
-}
-
-#[macro_export]
 macro_rules! set_invalid_test {
     ($name:ident, $create_method:ident, $method:ident $(, $value:expr)*) => {
         #[test]
