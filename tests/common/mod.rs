@@ -24,7 +24,7 @@ impl BitFlags {
 
 #[allow(unused)]
 pub fn new_si4703(transactions: &[I2cTrans]) -> Si4703<I2cMock, ic::Si4703> {
-    Si4703::new_si4703(I2cMock::new(transactions))
+    Si4703::new(I2cMock::new(transactions))
 }
 
 pub fn destroy<IC>(dev: Si4703<I2cMock, IC>) {

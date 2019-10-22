@@ -30,7 +30,7 @@ impl<I2C, E> Si4703<I2C, ic::Si4702>
 where
     I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
 {
-    /// Create new instance of a Si4703 device
+    /// Create new instance of a Si4702 device
     pub fn new_si4702(i2c: I2C) -> Self {
         Si4703 {
             i2c,
@@ -45,7 +45,7 @@ where
     I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
 {
     /// Create new instance of a Si4703 device
-    pub fn new_si4703(i2c: I2C) -> Self {
+    pub fn new(i2c: I2C) -> Self {
         Si4703 {
             i2c,
             seeking_state: SeekingState::Idle,
