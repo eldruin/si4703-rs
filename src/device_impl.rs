@@ -139,7 +139,11 @@ where
         self.write_powercfg(powercfg)
     }
 
-    fn configure_seek(powercfg: u16, mode: SeekMode, direction: SeekDirection) -> u16 {
+    fn get_powercfg_for_seek_config(
+        powercfg: u16,
+        mode: SeekMode,
+        direction: SeekDirection,
+    ) -> u16 {
         let powercfg = match mode {
             SeekMode::Wrap => powercfg | BitFlags::SKMODE,
             SeekMode::NoWrap => powercfg & !BitFlags::SKMODE,
@@ -342,7 +346,7 @@ where
         match (self.seeking_state, seek, stc) {
             (SeekingState::Idle, false, false) => {
                 let powercfg = regs[Register::POWERCFG] | BitFlags::SEEK;
-                let powercfg = Self::configure_seek(powercfg, mode, direction);
+                let powercfg = Self::get_powercfg_for_seek_config(powercfg, mode, direction);
                 self.write_powercfg(powercfg).map_err(nb::Error::Other)?;
                 self.seeking_state = SeekingState::Seeking;
                 Err(nb::Error::WouldBlock)
@@ -392,7 +396,8 @@ where
             match (self.seeking_state, seek, stc) {
                 (SeekingState::Idle, false, false) => {
                     let powercfg = regs[Register::POWERCFG] | BitFlags::SEEK;
-                    regs[Register::POWERCFG] = Self::configure_seek(powercfg, mode, direction);
+                    regs[Register::POWERCFG] =
+                        Self::get_powercfg_for_seek_config(powercfg, mode, direction);
                     let previous_sysconfig1 = regs[Register::SYSCONFIG1];
                     regs[Register::SYSCONFIG1] &= 0xFFF3;
                     regs[Register::SYSCONFIG1] |= 1 << 2;
