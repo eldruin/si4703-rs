@@ -118,8 +118,7 @@ fn can_seek() {
     destroy(dev);
 }
 
-#[test]
-fn can_fail_seeking() {
+fn fail_seeking_test(seeking_found_statusrssi: u16) {
     let mut found_data = [0; 32];
     found_data[0] = (BF::STC >> 8) as u8;
     found_data[1] = BF::STC as u8;
@@ -127,8 +126,8 @@ fn can_fail_seeking() {
     seeking_data[16] = (BF::SEEK >> 8) as u8;
     seeking_data[17] = BF::SEEK as u8;
     let mut seeking_found_data = [0; 32];
-    seeking_found_data[0] = ((BF::STC | BF::SF_BL) >> 8) as u8;
-    seeking_found_data[1] = (BF::STC | BF::SF_BL) as u8;
+    seeking_found_data[0] = (seeking_found_statusrssi >> 8) as u8;
+    seeking_found_data[1] = seeking_found_statusrssi as u8;
     seeking_found_data[16] = (BF::SEEK >> 8) as u8;
     seeking_found_data[17] = BF::SEEK as u8;
     let transactions = [
@@ -146,6 +145,18 @@ fn can_fail_seeking() {
         Error::SeekFailed
     );
     destroy(dev);
+}
+
+#[test]
+fn can_fail_seeking() {
+    let statusrssi = BF::STC | BF::SF_BL;
+    fail_seeking_test(statusrssi);
+}
+
+#[test]
+fn can_fail_seeking_afc_railed() {
+    let statusrssi = BF::STC | BF::AFCRL;
+    fail_seeking_test(statusrssi);
 }
 
 #[test]
@@ -195,8 +206,7 @@ fn can_seek_with_stc_int_pin() {
     pin.done()
 }
 
-#[test]
-fn can_fail_seeking_with_stc_int_pin() {
+fn fail_seeking_with_stc_int_pin_test(seeking_found_statusrssi: u16) {
     let mut found_data = [0; 32];
     found_data[0] = (BF::STC >> 8) as u8;
     found_data[1] = BF::STC as u8;
@@ -206,8 +216,8 @@ fn can_fail_seeking_with_stc_int_pin() {
     seeking_data[20] = (BF::STCIEN >> 8) as u8;
     seeking_data[21] = BF::STCIEN as u8 | 1 << 2;
     let mut seeking_found_data = [0; 32];
-    seeking_found_data[0] = ((BF::STC | BF::SF_BL) >> 8) as u8;
-    seeking_found_data[1] = (BF::STC | BF::SF_BL) as u8;
+    seeking_found_data[0] = (seeking_found_statusrssi >> 8) as u8;
+    seeking_found_data[1] = seeking_found_statusrssi as u8;
     seeking_found_data[16] = (BF::SEEK >> 8) as u8;
     seeking_found_data[17] = BF::SEEK as u8;
     let transactions = [
@@ -243,4 +253,17 @@ fn can_fail_seeking_with_stc_int_pin() {
     );
     destroy(dev);
     pin.done();
+}
+
+#[test]
+
+fn can_fail_seeking_with_stc_int_pin() {
+    let statusrssi = BF::STC | BF::SF_BL;
+    fail_seeking_with_stc_int_pin_test(statusrssi);
+}
+
+#[test]
+fn can_fail_seeking_with_stc_int_pin_afc_railed() {
+    let statusrssi = BF::STC | BF::AFCRL;
+    fail_seeking_with_stc_int_pin_test(statusrssi);
 }
