@@ -54,8 +54,8 @@ mod types;
 use types::SeekingState;
 pub use types::{
     ic, marker, Band, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
-    Gpio3Config, OutputMode, RdsMode, SeekDirection, SeekMode, Si4703, SoftmuteAttenuation,
-    SoftmuteRate, StereoToMonoBlendLevel, Volume,
+    Gpio3Config, OutputMode, RdsMode, SeekDirection, SeekFmImpulseThreshold, SeekMode,
+    SeekSnrThreshold, Si4703, SoftmuteAttenuation, SoftmuteRate, StereoToMonoBlendLevel, Volume,
 };
 
 impl marker::WithRds for ic::Si4703 {}

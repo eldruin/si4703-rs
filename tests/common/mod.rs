@@ -36,18 +36,18 @@ macro_rules! assert_error {
     ($result:expr, $error:ident::$variant:ident) => {
         match $result {
             Err($error::$variant) => (),
-            _ => panic!("InvalidInputData error not returned."),
+            _ => panic!("Error not returned."),
         }
     };
 }
 
 #[macro_export]
 macro_rules! set_invalid_test {
-    ($name:ident, $create_method:ident, $method:ident $(, $value:expr)*) => {
+    ($name:ident, $create_method:ident, $error:ident::$variant:ident, $method:ident $(, $value:expr)*) => {
         #[test]
         fn $name() {
             let mut dev = $create_method(&[]);
-            assert_invalid_input_data!(dev.$method($($value),*));
+            assert_error!(dev.$method($($value),*), $error::$variant);
             destroy(dev);
         }
     };

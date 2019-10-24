@@ -4,10 +4,49 @@ extern crate si4703;
 extern crate nb;
 use hal::i2c::Transaction as I2cTrans;
 use hal::pin::{Mock as PinMock, State as PinState, Transaction as PinTrans};
-use si4703::{Error, ErrorWithPin, SeekDirection, SeekMode};
+use si4703::{
+    Error, ErrorWithPin, SeekDirection, SeekFmImpulseThreshold as Cnt, SeekMode,
+    SeekSnrThreshold as Snr,
+};
 
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
+
+#[macro_export]
+macro_rules! config_seek_test {
+    ($name:ident, $sysconfig2:expr, $sysconfig3:expr $(, $value:expr)*) => {
+        write_test!(
+            $name,
+            16,
+            3,
+            $sysconfig2,
+            4,
+            $sysconfig3,
+            configure_seek,
+            $($value),*
+        );
+    };
+}
+
+config_seek_test!(default, 0, 0, 0, Snr::default(), Cnt::default());
+config_seek_test!(rssi_th, 0xAB00_u16, 0, 0xAB, Snr::default(), Cnt::default());
+config_seek_test!(snr_th, 0, 7 << 4, 0, Snr::Enabled(7), Cnt::default());
+config_seek_test!(fm_impulse_th, 0, 15, 0, Snr::default(), Cnt::Enabled(15));
+
+macro_rules! invalid_config_seek_test {
+    ($name:ident, $snr:expr, $cnt:expr) => {
+        #[test]
+        fn $name() {
+            let mut dev = new_si4703(&[]);
+            assert_error!(dev.configure_seek(0, $snr, $cnt), Error::InvalidInputData);
+        }
+    };
+}
+
+invalid_config_seek_test!(invalid_snr_th_too_small, Snr::Enabled(0), Cnt::default());
+invalid_config_seek_test!(invalid_snr_th_too_big, Snr::Enabled(8), Cnt::default());
+invalid_config_seek_test!(invalid_fm_imp_th_too_small, Snr::default(), Cnt::Enabled(0));
+invalid_config_seek_test!(invalid_fm_imp_th_too_big, Snr::default(), Cnt::Enabled(16));
 
 macro_rules! seek_test {
     ($name:ident, $mode:ident, $direction:ident, $powercfg:expr) => {

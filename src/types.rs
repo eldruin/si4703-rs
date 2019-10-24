@@ -5,6 +5,8 @@ use core::marker::PhantomData;
 pub enum Error<E> {
     /// I²C bus communication error
     I2C(E),
+    /// Invalid input data provided
+    InvalidInputData,
     /// Seek operation failed / Band limit reached
     SeekFailed,
 }
@@ -346,6 +348,44 @@ impl Default for SoftmuteAttenuation {
     }
 }
 
+/// Required channel SNR for a valid seek.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SeekSnrThreshold {
+    /// Disabled (default)
+    Disabled,
+    /// Enabled
+    ///
+    /// The value provided corresponds to the stops:
+    /// - Minimum (most stops): `Enable(1)`
+    /// - Maximum (fewest stops): `Enable(7)`
+    Enabled(u8),
+}
+
+impl Default for SeekSnrThreshold {
+    fn default() -> Self {
+        SeekSnrThreshold::Disabled
+    }
+}
+
+/// Allowable number of FM impulses for a valid seek channel.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SeekFmImpulseThreshold {
+    /// Disabled (default)
+    Disabled,
+    /// Enabled
+    ///
+    /// The value provided corresponds to the stops:
+    /// - Maximum (most stops): `Enable(1)`
+    /// - Minimum (fewest stops): `Enable(15)`
+    Enabled(u8),
+}
+
+impl Default for SeekFmImpulseThreshold {
+    fn default() -> Self {
+        SeekFmImpulseThreshold::Disabled
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -372,4 +412,6 @@ mod tests {
     default_test!(default_softmute_att, SoftmuteAttenuation, Db16);
     default_test!(default_softmute_rate, SoftmuteRate, Fastest);
     default_test!(default_blend, StereoToMonoBlendLevel, Dbuv31_49);
+    default_test!(default_snr, SeekSnrThreshold, Disabled);
+    default_test!(default_fm_impulse, SeekFmImpulseThreshold, Disabled);
 }

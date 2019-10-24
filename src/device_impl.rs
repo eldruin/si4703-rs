@@ -1,7 +1,8 @@
 use super::{
     ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
-    Gpio3Config, OutputMode, Register, SeekDirection, SeekMode, SeekingState, Si4703,
-    SoftmuteAttenuation, SoftmuteRate, StereoToMonoBlendLevel, Volume,
+    Gpio3Config, OutputMode, Register, SeekDirection, SeekFmImpulseThreshold, SeekMode,
+    SeekSnrThreshold, SeekingState, Si4703, SoftmuteAttenuation, SoftmuteRate,
+    StereoToMonoBlendLevel, Volume,
 };
 use core::marker::PhantomData;
 use hal::blocking::delay::DelayMs;
@@ -331,6 +332,33 @@ where
         regs[Register::SYSCONFIG1] &= 0xFF3F;
         regs[Register::SYSCONFIG1] |= mask << 6;
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
+    }
+
+    /// Configure seek RSSI, SNR and FM impulse detection thresholds
+    pub fn configure_seek(
+        &mut self,
+        rssi_threshold: u8,
+        snr_threshold: SeekSnrThreshold,
+        fm_impulse_threshold: SeekFmImpulseThreshold,
+    ) -> Result<(), Error<E>> {
+        let snr_mask = match snr_threshold {
+            SeekSnrThreshold::Disabled => 0,
+            SeekSnrThreshold::Enabled(v) if v > 7 || v == 0 => return Err(Error::InvalidInputData),
+            SeekSnrThreshold::Enabled(v) => v << 4,
+        };
+        let cnt_mask = match fm_impulse_threshold {
+            SeekFmImpulseThreshold::Disabled => 0,
+            SeekFmImpulseThreshold::Enabled(v) if v > 15 || v == 0 => {
+                return Err(Error::InvalidInputData)
+            }
+            SeekFmImpulseThreshold::Enabled(v) => v,
+        };
+        let mut regs = self.read_registers()?;
+        regs[Register::SYSCONFIG2] &= 0xFF00;
+        regs[Register::SYSCONFIG2] |= u16::from(rssi_threshold) << 8;
+        regs[Register::SYSCONFIG3] &= 0xFF00;
+        regs[Register::SYSCONFIG3] |= u16::from(snr_mask | cnt_mask);
+        self.write_registers(&regs[..=Register::SYSCONFIG3])
     }
 
     /// Seek
