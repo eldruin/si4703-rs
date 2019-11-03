@@ -68,7 +68,7 @@ where
 {
     /// Enable the oscillator.
     ///
-    /// This must be done at the beginning.
+    /// This must be called before enabling the device.
     /// After calling this, a minimum of 500ms must be waited in order
     /// for the oscillator to power up.
     pub fn enable_oscillator(&mut self) -> Result<(), Error<E>> {
