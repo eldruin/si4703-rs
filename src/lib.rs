@@ -43,6 +43,7 @@
 #![no_std]
 
 extern crate embedded_hal as hal;
+extern crate libm;
 extern crate nb;
 
 mod device_impl;
@@ -51,12 +52,14 @@ mod register_access;
 mod seek;
 pub use device_impl::reset;
 use register_access::{BitFlags, Register};
+mod tune;
 mod types;
 use types::OperationState;
 pub use types::{
     ic, marker, Band, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
     Gpio3Config, OutputMode, RdsMode, SeekDirection, SeekFmImpulseThreshold, SeekMode,
-    SeekSnrThreshold, Si4703, SoftmuteAttenuation, SoftmuteRate, StereoToMonoBlendLevel, Volume,
+    SeekSnrThreshold, Si4703, SoftmuteAttenuation, SoftmuteRate, StereoToMonoBlendLevel,
+    TuneChannel, Volume,
 };
 
 impl marker::WithRds for ic::Si4703 {}

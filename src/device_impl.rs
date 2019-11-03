@@ -25,20 +25,6 @@ pub fn reset<E, RSTP: OutputPin<Error = E>, SDAP: OutputPin<Error = E>, DELAY: D
     Ok(())
 }
 
-impl<I2C, E> Si4703<I2C, ic::Si4702>
-where
-    I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
-{
-    /// Create new instance of a Si4702 device
-    pub fn new_si4702(i2c: I2C) -> Self {
-        Si4703 {
-            i2c,
-            seeking_state: OperationState::Idle,
-            _ic: PhantomData,
-        }
-    }
-}
-
 impl<I2C, E> Si4703<I2C, ic::Si4703>
 where
     I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
@@ -48,6 +34,22 @@ where
         Si4703 {
             i2c,
             seeking_state: OperationState::Idle,
+            tuning_state: OperationState::Idle,
+            _ic: PhantomData,
+        }
+    }
+}
+
+impl<I2C, E> Si4703<I2C, ic::Si4702>
+where
+    I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
+{
+    /// Create new instance of a Si4702 device
+    pub fn new_si4702(i2c: I2C) -> Self {
+        Si4703 {
+            i2c,
+            seeking_state: OperationState::Idle,
+            tuning_state: OperationState::Idle,
             _ic: PhantomData,
         }
     }

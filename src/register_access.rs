@@ -8,6 +8,7 @@ impl Register {
     pub const DEVICE_ID: usize = 0x0;
     pub const CHIP_ID: usize = 0x1;
     pub const POWERCFG: usize = 0x2;
+    pub const CHANNEL: usize = 0x3;
     pub const SYSCONFIG1: usize = 0x4;
     pub const SYSCONFIG2: usize = 0x5;
     pub const SYSCONFIG3: usize = 0x6;
@@ -36,6 +37,7 @@ impl BitFlags {
     pub const VOLEXT: u16 = 1 << 8;
     pub const XOSCEN: u16 = 1 << 15;
     pub const AHIZEN: u16 = 1 << 14;
+    pub const TUNE: u16 = 1 << 15;
 }
 
 impl<I2C, E, IC> Si4703<I2C, IC>

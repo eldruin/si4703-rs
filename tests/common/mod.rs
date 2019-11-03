@@ -23,6 +23,7 @@ impl BitFlags {
     pub const VOLEXT: u16 = 1 << 8;
     pub const XOSCEN: u16 = 1 << 15;
     pub const AHIZEN: u16 = 1 << 14;
+    pub const TUNE: u16 = 1 << 15;
 }
 
 #[allow(unused)]

@@ -19,8 +19,20 @@ pub enum ErrorWithPin<CommE, PinE> {
     I2C(CommE),
     /// Error while communicating with pin
     Pin(PinE),
+    /// Invalid input data provided
+    InvalidInputData,
     /// Seek operation failed / Band limit reached
     SeekFailed,
+}
+
+impl<CommE, PinE> From<Error<CommE>> for ErrorWithPin<CommE, PinE> {
+    fn from(error: Error<CommE>) -> Self {
+        match error {
+            Error::I2C(e) => ErrorWithPin::I2C(e),
+            Error::InvalidInputData => ErrorWithPin::InvalidInputData,
+            Error::SeekFailed => ErrorWithPin::SeekFailed,
+        }
+    }
 }
 
 /// IC markers
@@ -51,6 +63,7 @@ pub enum OperationState {
 pub struct Si4703<I2C, IC> {
     pub(crate) i2c: I2C,
     pub(crate) seeking_state: OperationState,
+    pub(crate) tuning_state: OperationState,
     pub(crate) _ic: PhantomData<IC>,
 }
 
@@ -384,6 +397,16 @@ impl Default for SeekFmImpulseThreshold {
     fn default() -> Self {
         SeekFmImpulseThreshold::Disabled
     }
+}
+
+/// Tune channel frequency
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum TuneChannel {
+    /// Raw value for the channel select (10 bits)
+    Raw(u16),
+    /// Target frequency in MHz. The raw value will be aproximated taking
+    /// the configured band and spacing into account
+    Mhz(f32),
 }
 
 #[cfg(test)]
