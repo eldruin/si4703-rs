@@ -1,6 +1,6 @@
 use super::{
     ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, Gpio1Config, Gpio2Config, Gpio3Config,
-    OutputMode, Register, SeekingState, Si4703, SoftmuteAttenuation, SoftmuteRate,
+    OperationState, OutputMode, Register, Si4703, SoftmuteAttenuation, SoftmuteRate,
     StereoToMonoBlendLevel, Volume,
 };
 use core::marker::PhantomData;
@@ -33,7 +33,7 @@ where
     pub fn new_si4702(i2c: I2C) -> Self {
         Si4703 {
             i2c,
-            seeking_state: SeekingState::Idle,
+            seeking_state: OperationState::Idle,
             _ic: PhantomData,
         }
     }
@@ -47,7 +47,7 @@ where
     pub fn new(i2c: I2C) -> Self {
         Si4703 {
             i2c,
-            seeking_state: SeekingState::Idle,
+            seeking_state: OperationState::Idle,
             _ic: PhantomData,
         }
     }

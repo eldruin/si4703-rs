@@ -40,9 +40,9 @@ pub mod marker {
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub enum SeekingState {
+pub enum OperationState {
     Idle,
-    Seeking,
+    Busy,
     WaitingForStcToClear(bool),
 }
 
@@ -50,7 +50,7 @@ pub enum SeekingState {
 #[derive(Debug)]
 pub struct Si4703<I2C, IC> {
     pub(crate) i2c: I2C,
-    pub(crate) seeking_state: SeekingState,
+    pub(crate) seeking_state: OperationState,
     pub(crate) _ic: PhantomData<IC>,
 }
 

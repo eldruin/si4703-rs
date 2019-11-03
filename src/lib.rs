@@ -52,7 +52,7 @@ mod seek;
 pub use device_impl::reset;
 use register_access::{BitFlags, Register};
 mod types;
-use types::SeekingState;
+use types::OperationState;
 pub use types::{
     ic, marker, Band, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
     Gpio3Config, OutputMode, RdsMode, SeekDirection, SeekFmImpulseThreshold, SeekMode,

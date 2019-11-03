@@ -1,6 +1,6 @@
 use super::{
-    BitFlags, Error, ErrorWithPin, Register, SeekDirection, SeekFmImpulseThreshold, SeekMode,
-    SeekSnrThreshold, SeekingState, Si4703,
+    BitFlags, Error, ErrorWithPin, OperationState, Register, SeekDirection, SeekFmImpulseThreshold,
+    SeekMode, SeekSnrThreshold, Si4703,
 };
 use hal::blocking::i2c;
 use hal::digital::v2::InputPin;
@@ -64,22 +64,22 @@ where
         let afcrl = (regs[Register::STATUSRSSI] & BitFlags::AFCRL) != 0;
 
         match (self.seeking_state, seek, stc) {
-            (SeekingState::Idle, false, false) => {
+            (OperationState::Idle, false, false) => {
                 let powercfg = regs[Register::POWERCFG] | BitFlags::SEEK;
                 let powercfg = Self::get_powercfg_for_seek_config(powercfg, mode, direction);
                 self.write_powercfg(powercfg).map_err(nb::Error::Other)?;
-                self.seeking_state = SeekingState::Seeking;
+                self.seeking_state = OperationState::Busy;
                 Err(nb::Error::WouldBlock)
             }
-            (SeekingState::Seeking, true, true) => {
+            (OperationState::Busy, true, true) => {
                 regs[Register::POWERCFG] &= !(BitFlags::SEEK);
                 self.write_powercfg(regs[Register::POWERCFG])
                     .map_err(nb::Error::Other)?;
-                self.seeking_state = SeekingState::WaitingForStcToClear(!failed && !afcrl);
+                self.seeking_state = OperationState::WaitingForStcToClear(!failed && !afcrl);
                 Err(nb::Error::WouldBlock)
             }
-            (SeekingState::WaitingForStcToClear(success), false, false) => {
-                self.seeking_state = SeekingState::Idle;
+            (OperationState::WaitingForStcToClear(success), false, false) => {
+                self.seeking_state = OperationState::Idle;
                 if success {
                     Ok(())
                 } else {
@@ -100,7 +100,7 @@ where
         direction: SeekDirection,
         stc_int_pin: &P,
     ) -> nb::Result<(), ErrorWithPin<E, PinE>> {
-        if self.seeking_state == SeekingState::Seeking
+        if self.seeking_state == OperationState::Busy
             && stc_int_pin
                 .is_high()
                 .map_err(ErrorWithPin::Pin)
@@ -115,7 +115,7 @@ where
             let afcrl = (regs[Register::STATUSRSSI] & BitFlags::AFCRL) != 0;
 
             match (self.seeking_state, seek, stc) {
-                (SeekingState::Idle, false, false) => {
+                (OperationState::Idle, false, false) => {
                     let powercfg = regs[Register::POWERCFG] | BitFlags::SEEK;
                     regs[Register::POWERCFG] =
                         Self::get_powercfg_for_seek_config(powercfg, mode, direction);
@@ -132,19 +132,19 @@ where
                             .map_err(ErrorWithPin::I2C)
                             .map_err(nb::Error::Other)?;
                     }
-                    self.seeking_state = SeekingState::Seeking;
+                    self.seeking_state = OperationState::Busy;
                     Err(nb::Error::WouldBlock)
                 }
-                (SeekingState::Seeking, true, true) => {
+                (OperationState::Busy, true, true) => {
                     regs[Register::POWERCFG] &= !(BitFlags::SEEK);
                     self.write_powercfg_bare_err(regs[Register::POWERCFG])
                         .map_err(ErrorWithPin::I2C)
                         .map_err(nb::Error::Other)?;
-                    self.seeking_state = SeekingState::WaitingForStcToClear(!failed && !afcrl);
+                    self.seeking_state = OperationState::WaitingForStcToClear(!failed && !afcrl);
                     Err(nb::Error::WouldBlock)
                 }
-                (SeekingState::WaitingForStcToClear(success), false, false) => {
-                    self.seeking_state = SeekingState::Idle;
+                (OperationState::WaitingForStcToClear(success), false, false) => {
+                    self.seeking_state = OperationState::Idle;
                     if success {
                         Ok(())
                     } else {
