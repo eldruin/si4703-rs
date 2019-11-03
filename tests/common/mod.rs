@@ -21,6 +21,7 @@ impl BitFlags {
     pub const AGCD: u16 = 1 << 10;
     pub const RDSM: u16 = 1 << 11;
     pub const VOLEXT: u16 = 1 << 8;
+    pub const XOSCEN: u16 = 1 << 15;
 }
 
 #[allow(unused)]

@@ -73,7 +73,7 @@ where
     /// for the oscillator to power up.
     pub fn enable_oscillator(&mut self) -> Result<(), Error<E>> {
         let mut regs = self.read_registers()?;
-        regs[Register::TEST1] = 0x8100;
+        regs[Register::TEST1] |= BitFlags::XOSCEN;
         self.write_registers(&regs[0..=Register::TEST1])
     }
 
