@@ -48,6 +48,7 @@ extern crate nb;
 mod device_impl;
 mod rds;
 mod register_access;
+mod seek;
 pub use device_impl::reset;
 use register_access::{BitFlags, Register};
 mod types;
