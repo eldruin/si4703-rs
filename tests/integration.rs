@@ -16,6 +16,8 @@ fn can_create_and_destroy_si4702() {
 }
 
 write_test!(can_enable_osc, BF::XOSCEN, 16, 6, enable_oscillator);
+write_test!(can_enable_ahiz, BF::AHIZEN, 16, 6, enable_audio_high_z);
+write_test!(can_disable_ahiz, 0, 16, 6, disable_audio_high_z);
 
 #[test]
 fn can_enable() {

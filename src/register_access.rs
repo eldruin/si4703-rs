@@ -35,6 +35,7 @@ impl BitFlags {
     pub const RDSM: u16 = 1 << 11;
     pub const VOLEXT: u16 = 1 << 8;
     pub const XOSCEN: u16 = 1 << 15;
+    pub const AHIZEN: u16 = 1 << 14;
 }
 
 impl<I2C, E, IC> Si4703<I2C, IC>

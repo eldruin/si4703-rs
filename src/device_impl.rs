@@ -334,6 +334,24 @@ where
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
+    /// Enable the audio High-Z.
+    ///
+    /// This must be called before enabling the device.
+    pub fn enable_audio_high_z(&mut self) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        regs[Register::TEST1] |= BitFlags::AHIZEN;
+        self.write_registers(&regs[0..=Register::TEST1])
+    }
+
+    /// Disable the audio High-Z.
+    ///
+    /// This must be called before enabling the device.
+    pub fn disable_audio_high_z(&mut self) -> Result<(), Error<E>> {
+        let mut regs = self.read_registers()?;
+        regs[Register::TEST1] &= !BitFlags::AHIZEN;
+        self.write_registers(&regs[0..=Register::TEST1])
+    }
+
     /// Configure seek RSSI, SNR and FM impulse detection thresholds
     pub fn configure_seek(
         &mut self,
