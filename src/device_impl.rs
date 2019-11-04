@@ -4,26 +4,7 @@ use super::{
     StereoToMonoBlendLevel, Volume,
 };
 use core::marker::PhantomData;
-use hal::blocking::delay::DelayMs;
 use hal::blocking::i2c;
-use hal::digital::v2::OutputPin;
-
-/// Reset the device and select I2C communication
-///
-/// This includes a 2ms delay to allow the pins to settle and the device
-/// to perform the reset.
-pub fn reset<E, RSTP: OutputPin<Error = E>, SDAP: OutputPin<Error = E>, DELAY: DelayMs<u8>>(
-    rst: &mut RSTP,
-    sda: &mut SDAP,
-    delay: &mut DELAY,
-) -> Result<(), E> {
-    sda.set_low()?;
-    rst.set_low()?;
-    delay.delay_ms(1);
-    rst.set_high()?;
-    delay.delay_ms(1);
-    Ok(())
-}
 
 impl<I2C, E> Si4703<I2C, ic::Si4703>
 where

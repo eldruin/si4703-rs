@@ -49,9 +49,13 @@ extern crate nb;
 mod device_impl;
 mod rds;
 mod register_access;
+mod reset;
 mod seek;
-pub use device_impl::reset;
 use register_access::{BitFlags, Register};
+pub use reset::{
+    reset_and_select_i2c_method1, reset_and_select_i2c_method1_with_gpio3,
+    reset_and_select_i2c_method2,
+};
 mod tune;
 mod types;
 use types::OperationState;
