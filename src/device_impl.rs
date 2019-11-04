@@ -1,10 +1,10 @@
-use super::{
+use crate::{
     ic, Band, BitFlags, ChannelSpacing, DeEmphasis, Error, Gpio1Config, Gpio2Config, Gpio3Config,
     OperationState, OutputMode, Register, Si4703, SoftmuteAttenuation, SoftmuteRate,
     StereoToMonoBlendLevel, Volume,
 };
 use core::marker::PhantomData;
-use hal::blocking::i2c;
+use embedded_hal::blocking::i2c;
 
 impl<I2C, E> Si4703<I2C, ic::Si4703>
 where

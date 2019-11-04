@@ -85,24 +85,20 @@
 #![deny(unsafe_code, missing_docs)]
 #![no_std]
 
-extern crate embedded_hal as hal;
-extern crate libm;
-extern crate nb;
-
 mod device_impl;
 mod rds;
 mod register_access;
 mod reset;
 mod seek;
-use register_access::{BitFlags, Register};
-pub use reset::{
+use crate::register_access::{BitFlags, Register};
+pub use crate::reset::{
     reset_and_select_i2c_method1, reset_and_select_i2c_method1_with_gpio3,
     reset_and_select_i2c_method2,
 };
 mod tune;
 mod types;
-use types::OperationState;
-pub use types::{
+use crate::types::OperationState;
+pub use crate::types::{
     ic, marker, Band, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
     Gpio3Config, OutputMode, RdsMode, SeekDirection, SeekFmImpulseThreshold, SeekMode,
     SeekSnrThreshold, Si4703, SoftmuteAttenuation, SoftmuteRate, StereoToMonoBlendLevel,

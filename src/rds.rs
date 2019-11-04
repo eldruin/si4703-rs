@@ -1,6 +1,5 @@
-use super::{marker, BitFlags, Error, RdsMode, Register, Si4703};
-
-use hal::blocking::i2c;
+use crate::{marker, BitFlags, Error, RdsMode, Register, Si4703};
+use embedded_hal::blocking::i2c;
 
 impl<I2C, E, IC> Si4703<I2C, IC>
 where

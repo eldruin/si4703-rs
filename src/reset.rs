@@ -1,5 +1,4 @@
-use hal::blocking::delay::DelayMs;
-use hal::digital::v2::OutputPin;
+use embedded_hal::{blocking::delay::DelayMs, digital::v2::OutputPin};
 
 /// Reset the device and select I2C communication (method 1, no GPIO3)
 ///

@@ -1,9 +1,8 @@
-extern crate embedded_hal_mock as hal;
-extern crate si4703;
-#[macro_use]
-extern crate nb;
-use hal::i2c::Transaction as I2cTrans;
-use hal::pin::{Mock as PinMock, State as PinState, Transaction as PinTrans};
+use embedded_hal_mock::{
+    i2c::Transaction as I2cTrans,
+    pin::{Mock as PinMock, State as PinState, Transaction as PinTrans},
+};
+use nb::block;
 use si4703::TuneChannel;
 
 mod common;

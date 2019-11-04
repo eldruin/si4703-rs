@@ -1,4 +1,4 @@
-use hal::i2c::{Mock as I2cMock, Transaction as I2cTrans};
+use embedded_hal_mock::i2c::{Mock as I2cMock, Transaction as I2cTrans};
 use si4703::{ic, Si4703};
 
 pub const DEV_ADDR: u8 = 0x10;

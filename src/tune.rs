@@ -1,6 +1,5 @@
-use super::{BitFlags, Error, ErrorWithPin, OperationState, Register, Si4703, TuneChannel};
-use hal::blocking::i2c;
-use hal::digital::v2::InputPin;
+use crate::{BitFlags, Error, ErrorWithPin, OperationState, Register, Si4703, TuneChannel};
+use embedded_hal::{blocking::i2c, digital::v2::InputPin};
 
 impl<I2C, E, IC> Si4703<I2C, IC>
 where

@@ -1,5 +1,5 @@
-use super::{Error, Si4703};
-use hal::blocking::i2c;
+use crate::{Error, Si4703};
+use embedded_hal::blocking::i2c;
 
 const DEVICE_ADDRESS: u8 = 0x10;
 

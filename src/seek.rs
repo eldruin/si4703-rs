@@ -1,9 +1,8 @@
-use super::{
+use crate::{
     BitFlags, Error, ErrorWithPin, OperationState, Register, SeekDirection, SeekFmImpulseThreshold,
     SeekMode, SeekSnrThreshold, Si4703,
 };
-use hal::blocking::i2c;
-use hal::digital::v2::InputPin;
+use embedded_hal::{blocking::i2c, digital::v2::InputPin};
 
 impl<I2C, E, IC> Si4703<I2C, IC>
 where

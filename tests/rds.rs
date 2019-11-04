@@ -1,6 +1,4 @@
-extern crate embedded_hal_mock as hal;
-extern crate si4703;
-use hal::i2c::Transaction as I2cTrans;
+use embedded_hal_mock::i2c::Transaction as I2cTrans;
 use si4703::RdsMode;
 
 mod common;
