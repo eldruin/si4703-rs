@@ -8,10 +8,32 @@
 [![Coverage Status](https://coveralls.io/repos/github/eldruin/si4703-rs/badge.svg?branch=master)](https://coveralls.io/github/eldruin/si4703-rs?branch=master)
 
 This is a platform agnostic Rust driver for the Si4703 and Si4702 FM radio turners
-(receivers) using the [`embedded-hal`] traits.
-<!-- TODO
+(receivers) using the [`embedded-hal`] traits and I2C.
+
 This driver allows you to:
--->
+- Enable/disable the device. See: `enable()`.
+- Mute/unmute. See: `mute()`.
+- Configure seek. See: `configure_seek()`.
+- Seek with/without STC interrupts. See: `seek_with_stc_int_pin()`.
+- Tune a frequency with/without STC interrupts. See: `tune_with_stc_int_pin()`.
+- Set volume. See: `set_volume()`.
+- Set band. See: `set_band()`.
+- Set channel spacing. See: `set_channel_spacing()`.
+- Set the GPIO1, GPIO2 and GPIO3 function/status. See: `set_gpio1()`.
+- Enable/disable softmute. See: `enable_softmute()`.
+- Enable/disable auto gain control. See: `enable_auto_gain_control()`.
+- Enable/disable oscillator. See: `enable_oscillator()`.
+- Enable/disable STC interrupts. See: `enable_stc_interrupts()`.
+- Enable/disable RDS. See: `enable_rds()`.
+- Enable/disable audio High-Z. See: `enable_audio_high_z()`.
+- Set de-emphasis. See: `set_deemphasis()`.
+- Set stereo to mono blend level. See: `set_stereo_to_mono_blend_level()`.
+- Set stereo/mono output mode. See: `set_output_mode()`.
+- Get channel. See: `get_channel()`.
+- Get device ID. See: `get_device_id()`.
+- Get chip ID. See: `get_chip_id()`.
+- Reset and select I2C communication using several methods. See: `reset_and_select_i2c_method1()`.
+
 <!--TODO
 [Introductory blog post](https://blog.eldruin.com/...)
 -->

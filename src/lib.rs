@@ -1,11 +1,54 @@
 //! This is a platform agnostic Rust driver for the Si4702 and Si4703 FM radio
-//! turners (receivers) using the [`embedded-hal`] traits.
+//! turners (receivers) using the [`embedded-hal`] traits and I2C.
 //!
 //! [`embedded-hal`]: https://github.com/rust-embedded/embedded-hal
 //!
-//! <!--TODO
 //! This driver allows you to:
-//! -->
+//! - Enable/disable the device. See: [`enable()`].
+//! - Mute/unmute. See: [`mute()`].
+//! - Configure seek. See: [`configure_seek()`].
+//! - Seek with/without STC interrupts. See: [`seek_with_stc_int_pin()`].
+//! - Tune a frequency with/without STC interrupts. See: [`tune_with_stc_int_pin()`].
+//! - Set volume. See: [`set_volume()`].
+//! - Set band. See: [`set_band()`].
+//! - Set channel spacing. See: [`set_channel_spacing()`].
+//! - Set the GPIO1, GPIO2 and GPIO3 function/status. See: [`set_gpio1()`].
+//! - Enable/disable softmute. See: [`enable_softmute()`].
+//! - Enable/disable auto gain control. See: [`enable_auto_gain_control()`].
+//! - Enable/disable oscillator. See: [`enable_oscillator()`].
+//! - Enable/disable STC interrupts. See: [`enable_stc_interrupts()`].
+//! - Enable/disable RDS. See: [`enable_rds()`].
+//! - Enable/disable audio High-Z. See: [`enable_audio_high_z()`].
+//! - Set de-emphasis. See: [`set_deemphasis()`].
+//! - Set stereo to mono blend level. See: [`set_stereo_to_mono_blend_level()`].
+//! - Set stereo/mono output mode. See: [`set_output_mode()`].
+//! - Get channel. See: [`get_channel()`].
+//! - Get device ID. See: [`get_device_id()`].
+//! - Get chip ID. See: [`get_chip_id()`].
+//! - Reset and select I2C communication using several methods. See: [`reset_and_select_i2c_method1()`].
+//!
+//! [`enable()`]: struct.Si4703.html#method.enable
+//! [`mute()`]: struct.Si4703.html#method.mute
+//! [`configure_seek()`]: struct.Si4703.html#method.configure_seek
+//! [`seek_with_stc_int_pin()`]: struct.Si4703.html#method.seek_with_stc_int_pin
+//! [`tune_with_stc_int_pin()`]: struct.Si4703.html#method.tune_with_stc_int_pin
+//! [`set_volume()`]: struct.Si4703.html#method.set_volume
+//! [`set_band()`]: struct.Si4703.html#method.set_band
+//! [`set_channel_spacing()`]: struct.Si4703.html#method.set_channel_spacing
+//! [`set_gpio1()`]: struct.Si4703.html#method.set_gpio1
+//! [`enable_softmute()`]: struct.Si4703.html#method.enable_softmute
+//! [`enable_auto_gain_control()`]: struct.Si4703.html#method.enable_auto_gain_control
+//! [`enable_oscillator()`]: struct.Si4703.html#method.enable_oscillator
+//! [`enable_stc_interrupts()`]: struct.Si4703.html#method.enable_stc_interrupts
+//! [`enable_rds()`]: struct.Si4703.html#method.enable_rds
+//! [`enable_audio_high_z()`]: struct.Si4703.html#method.enable_audio_high_z
+//! [`set_deemphasis()`]: struct.Si4703.html#method.set_deemphasis
+//! [`set_stereo_to_mono_blend_level()`]: struct.Si4703.html#method.set_stereo_to_mono_blend_level
+//! [`set_output_mode()`]: struct.Si4703.html#method.set_output_mode
+//! [`get_channel()`]: struct.Si4703.html#method.get_channel
+//! [`get_device_id()`]: struct.Si4703.html#method.get_device_id
+//! [`get_chip_id()`]: struct.Si4703.html#method.get_chip_id
+//! [`reset_and_select_i2c_method1()`]: struct.Si4703.html#method.reset_and_select_i2c_method1
 //!
 //! ## The devices
 //!
