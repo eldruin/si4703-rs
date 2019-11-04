@@ -103,7 +103,7 @@
 //!     SeekMode, Si4703, Volume,
 //! };
 //!
-//! #fn main() {
+//! # fn main() {
 //! let mut delay = Delay {};
 //! {
 //!     // Reset and communication protocol selection must be done beforehand
@@ -147,7 +147,7 @@
 //!     }
 //!     delay.delay_ms(50_u8);
 //! }
-//! #}
+//! # }
 //! ```
 //!
 
