@@ -14,6 +14,7 @@ impl BitFlags {
     pub const SEEK: u16 = 1 << 8;
     pub const DE: u16 = 1 << 11;
     pub const STCIEN: u16 = 1 << 14;
+    pub const RDSR: u16 = 1 << 15;
     pub const STC: u16 = 1 << 14;
     pub const SF_BL: u16 = 1 << 13;
     pub const AFCRL: u16 = 1 << 12;

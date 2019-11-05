@@ -24,7 +24,13 @@ where
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
-    /// Get RDS synchronization status (only available in RDS verbose mode)
+    /// Get RDS whether a new RDS group is ready.
+    pub fn rds_ready(&mut self) -> Result<bool, Error<E>> {
+        let status = self.read_status()?;
+        Ok((status & BitFlags::RDSR) != 0)
+    }
+
+    /// Get RDS synchronization status (only available in RDS verbose mode).
     pub fn rds_synchronized(&mut self) -> Result<bool, Error<E>> {
         let status = self.read_status()?;
         Ok((status & BitFlags::RDSS) != 0)

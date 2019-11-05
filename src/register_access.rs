@@ -22,6 +22,7 @@ impl BitFlags {
     pub const DSMUTE: u16 = 1 << 15;
     pub const DMUTE: u16 = 1 << 14;
     pub const MONO: u16 = 1 << 13;
+    pub const RDSR: u16 = 1 << 15;
     pub const STC: u16 = 1 << 14;
     pub const SF_BL: u16 = 1 << 13;
     pub const AFCRL: u16 = 1 << 12;
