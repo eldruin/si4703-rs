@@ -328,7 +328,7 @@ where
     }
 
     /// Read the channel
-    pub fn get_channel(&mut self) -> Result<f32, Error<E>> {
+    pub fn channel(&mut self) -> Result<f32, Error<E>> {
         let regs = self.read_registers()?;
         let spacing = (regs[Register::SYSCONFIG2] & (0b11 << 4)) >> 4;
         let spacing = match spacing {
@@ -345,7 +345,7 @@ where
     /// Get the device ID
     ///
     /// Returns the (part number, manufacturer ID) as a tuple
-    pub fn get_device_id(&mut self) -> Result<(u8, u16), Error<E>> {
+    pub fn device_id(&mut self) -> Result<(u8, u16), Error<E>> {
         let regs = self.read_registers()?;
         let device_id = regs[Register::DEVICE_ID];
         let pn = ((device_id & 0xF000) >> 12) as u8;
@@ -356,7 +356,7 @@ where
     /// Get the chip ID
     ///
     /// Returns the (revision, device, firmware) as a tuple
-    pub fn get_chip_id(&mut self) -> Result<(u8, u8, u8), Error<E>> {
+    pub fn chip_id(&mut self) -> Result<(u8, u8, u8), Error<E>> {
         let regs = self.read_registers()?;
         let chip_id = regs[Register::CHIP_ID];
         let rev = ((chip_id & 0xFC00) >> 10) as u8;

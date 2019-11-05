@@ -22,9 +22,9 @@
 //! - Set de-emphasis. See: [`set_deemphasis()`].
 //! - Set stereo to mono blend level. See: [`set_stereo_to_mono_blend_level()`].
 //! - Set stereo/mono output mode. See: [`set_output_mode()`].
-//! - Get channel. See: [`get_channel()`].
-//! - Get device ID. See: [`get_device_id()`].
-//! - Get chip ID. See: [`get_chip_id()`].
+//! - Get channel. See: [`channel()`].
+//! - Get device ID. See: [`device_id()`].
+//! - Get chip ID. See: [`chip_id()`].
 //! - Reset and select I2C communication using several methods. See: [`reset_and_select_i2c_method1()`].
 //!
 //! [`enable()`]: struct.Si4703.html#method.enable
