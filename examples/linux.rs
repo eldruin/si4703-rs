@@ -33,7 +33,7 @@ fn main() {
     loop {
         match radio.seek_with_stc_int_pin(SeekMode::Wrap, SeekDirection::Up, &stc_int) {
             Err(nb::Error::WouldBlock) => {
-                let channel = radio.get_channel().unwrap_or(-1.0);
+                let channel = radio.channel().unwrap_or(-1.0);
                 println!("Trying channel at {:1} MHz", channel);
             }
             Err(nb::Error::Other(ErrorWithPin::SeekFailed)) => {
@@ -43,7 +43,7 @@ fn main() {
                 println!("Error: {:?}", e);
             }
             Ok(_) => {
-                let channel = radio.get_channel().unwrap_or(-1.0);
+                let channel = radio.channel().unwrap_or(-1.0);
                 println!("Found channel at {:1} MHz", channel);
                 delay.delay_ms(5000_u16); // listen for 5 seconds, then seek again
             }

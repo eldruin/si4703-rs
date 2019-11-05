@@ -185,7 +185,7 @@ macro_rules! get_channel_test {
             data[11 * 2 + 1] = $sysconfig2 as u8;
             let transactions = [I2cTrans::read(DEV_ADDR, data.to_vec())];
             let mut dev = new_si4703(&transactions);
-            let channel = dev.get_channel().unwrap();
+            let channel = dev.channel().unwrap();
             assert!(($value - 0.2) < channel);
             assert!(($value + 0.2) > channel);
             destroy(dev);
@@ -210,7 +210,7 @@ fn can_read_device_id() {
     data[6 * 2 + 1] = 0x42;
     let transactions = [I2cTrans::read(DEV_ADDR, data.to_vec())];
     let mut dev = new_si4703(&transactions);
-    let (pn, mfid) = dev.get_device_id().unwrap();
+    let (pn, mfid) = dev.device_id().unwrap();
     assert_eq!(pn, 1);
     assert_eq!(mfid, 0x242);
     destroy(dev);
@@ -223,7 +223,7 @@ fn can_read_chip_id() {
     data[7 * 2 + 1] = 0xA5;
     let transactions = [I2cTrans::read(DEV_ADDR, data.to_vec())];
     let mut dev = new_si4703(&transactions);
-    let (rev, device, firmware) = dev.get_chip_id().unwrap();
+    let (rev, device, firmware) = dev.chip_id().unwrap();
     assert_eq!(rev, 33);
     assert_eq!(device, 6);
     assert_eq!(firmware, 37);

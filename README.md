@@ -120,7 +120,7 @@ fn main() {
     let stc_int = Pin::new(27);
     // Seek using STC interrupt pin
     block!(radio.seek_with_stc_int_pin(SeekMode::Wrap, SeekDirection::Up, &stc_int)).unwrap();
-    let channel = radio.get_channel().unwrap_or(-1.0);
+    let channel = radio.channel().unwrap_or(-1.0);
     println!("Found channel at {:1} MHz", channel);
 }
 ```
