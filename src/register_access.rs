@@ -25,6 +25,7 @@ impl BitFlags {
     pub const STC: u16 = 1 << 14;
     pub const SF_BL: u16 = 1 << 13;
     pub const AFCRL: u16 = 1 << 12;
+    pub const RDSS: u16 = 1 << 11;
     pub const DE: u16 = 1 << 11;
     pub const SKMODE: u16 = 1 << 10;
     pub const SEEKUP: u16 = 1 << 9;
@@ -44,6 +45,14 @@ impl<I2C, E, IC> Si4703<I2C, IC>
 where
     I2C: i2c::Write<Error = E> + i2c::Read<Error = E>,
 {
+    pub(crate) fn read_status(&mut self) -> Result<u16, Error<E>> {
+        let mut data = [0, 0];
+        self.i2c
+            .read(DEVICE_ADDRESS, &mut data[..2])
+            .map_err(Error::I2C)?;
+        Ok(u16::from(data[0]) << 8 | u16::from(data[1]))
+    }
+
     pub(crate) fn read_powercfg(&mut self) -> Result<u16, Error<E>> {
         self.read_powercfg_bare_err().map_err(Error::I2C)
     }

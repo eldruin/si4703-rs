@@ -23,4 +23,10 @@ where
         regs[Register::SYSCONFIG1] &= !BitFlags::RDS;
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
+
+    /// Get RDS synchronization status (only available in RDS verbose mode)
+    pub fn rds_synchronized(&mut self) -> Result<bool, Error<E>> {
+        let status = self.read_status()?;
+        Ok((status & BitFlags::RDSS) != 0)
+    }
 }

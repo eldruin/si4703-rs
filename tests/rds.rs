@@ -26,3 +26,6 @@ fn can_enable_rds_verbose() {
     dev.enable_rds(RdsMode::Verbose).unwrap();
     destroy(dev);
 }
+
+read_test!(rds_not_sync, 0, 1, false, rds_synchronized);
+read_test!(rds_sync, BF::RDSS, 1, true, rds_synchronized);

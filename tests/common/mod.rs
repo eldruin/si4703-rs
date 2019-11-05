@@ -17,6 +17,7 @@ impl BitFlags {
     pub const STC: u16 = 1 << 14;
     pub const SF_BL: u16 = 1 << 13;
     pub const AFCRL: u16 = 1 << 12;
+    pub const RDSS: u16 = 1 << 11;
     pub const RDS: u16 = 1 << 12;
     pub const AGCD: u16 = 1 << 10;
     pub const RDSM: u16 = 1 << 11;
@@ -96,5 +97,22 @@ macro_rules! write_test {
 macro_rules! write_powercfg_test {
     ($name:ident, $value:expr, $method:ident $(, $arg:expr)*) => {
         write_test!($name, $value, 9, 1, $method $(, $arg)*);
+    };
+}
+
+#[macro_export]
+macro_rules! read_test {
+    ($name:ident, $value:expr, $read_reg_count:expr, $expected:expr, $method:ident $(, $arg:expr)*) => {
+        #[test]
+        fn $name() {
+            let mut read = [0; $read_reg_count*2];
+            read[($read_reg_count-1)*2] = ($value >> 8) as u8;
+            read[($read_reg_count-1)*2+1] = $value as u8;
+            let transactions = [
+                I2cTrans::read(DEV_ADDR, read.to_vec())];
+            let mut dev = new_si4703(&transactions);
+            assert_eq!($expected, dev.$method($($arg),*).unwrap());
+            destroy(dev);
+        }
     };
 }
