@@ -111,6 +111,16 @@ where
         self.write_powercfg(powercfg | BitFlags::DSMUTE)
     }
 
+    /// Get output mode: Stereo/Mono
+    pub fn output_mode(&mut self) -> Result<OutputMode, Error<E>> {
+        let status = self.read_status()?;
+        if (status & BitFlags::ST) != 0 {
+            Ok(OutputMode::Stereo)
+        } else {
+            Ok(OutputMode::Mono)
+        }
+    }
+
     /// Set output mode: Stereo/Mono
     pub fn set_output_mode(&mut self, mode: OutputMode) -> Result<(), Error<E>> {
         let powercfg = self.read_powercfg()?;

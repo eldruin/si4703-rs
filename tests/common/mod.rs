@@ -19,6 +19,7 @@ impl BitFlags {
     pub const SF_BL: u16 = 1 << 13;
     pub const AFCRL: u16 = 1 << 12;
     pub const RDSS: u16 = 1 << 11;
+    pub const ST: u16 = 1 << 8;
     pub const RDS: u16 = 1 << 12;
     pub const AGCD: u16 = 1 << 10;
     pub const RDSM: u16 = 1 << 11;
