@@ -24,7 +24,7 @@ where
         self.write_registers(&regs[0..=Register::SYSCONFIG1])
     }
 
-    /// Get RDS whether a new RDS group is ready.
+    /// Get whether a new RDS group is ready.
     pub fn rds_ready(&mut self) -> Result<bool, Error<E>> {
         let status = self.read_status()?;
         Ok((status & BitFlags::RDSR) != 0)

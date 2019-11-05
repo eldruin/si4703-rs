@@ -17,15 +17,19 @@
 //! - Enable/disable auto gain control. See: [`enable_auto_gain_control()`].
 //! - Enable/disable oscillator. See: [`enable_oscillator()`].
 //! - Enable/disable STC interrupts. See: [`enable_stc_interrupts()`].
-//! - Enable/disable RDS. See: [`enable_rds()`].
 //! - Enable/disable audio High-Z. See: [`enable_audio_high_z()`].
 //! - Set de-emphasis. See: [`set_deemphasis()`].
 //! - Set stereo to mono blend level. See: [`set_stereo_to_mono_blend_level()`].
 //! - Set stereo/mono output mode. See: [`set_output_mode()`].
-//! - Get channel. See: [`channel()`].
-//! - Get device ID. See: [`device_id()`].
-//! - Get chip ID. See: [`chip_id()`].
+//! - Read output mode. See: [`output_mode()`].
+//! - Read channel. See: [`channel()`].
+//! - Read device ID. See: [`device_id()`].
+//! - Read chip ID. See: [`chip_id()`].
 //! - Reset and select I2C communication using several methods. See: [`reset_and_select_i2c_method1()`].
+//! - RDS/RBDS (only on Si4703):
+//!     - Enable/disable RDS. See: [`enable_rds()`].
+//!     - Read whether a new RDS group is ready. See: [`rds_ready()`].
+//!     - Read whether RDS is synchronized. See: [`rds_synchronized()`].
 //!
 //! [`enable()`]: struct.Si4703.html#method.enable
 //! [`mute()`]: struct.Si4703.html#method.mute
@@ -40,15 +44,18 @@
 //! [`enable_auto_gain_control()`]: struct.Si4703.html#method.enable_auto_gain_control
 //! [`enable_oscillator()`]: struct.Si4703.html#method.enable_oscillator
 //! [`enable_stc_interrupts()`]: struct.Si4703.html#method.enable_stc_interrupts
-//! [`enable_rds()`]: struct.Si4703.html#method.enable_rds
 //! [`enable_audio_high_z()`]: struct.Si4703.html#method.enable_audio_high_z
 //! [`set_deemphasis()`]: struct.Si4703.html#method.set_deemphasis
 //! [`set_stereo_to_mono_blend_level()`]: struct.Si4703.html#method.set_stereo_to_mono_blend_level
 //! [`set_output_mode()`]: struct.Si4703.html#method.set_output_mode
-//! [`get_channel()`]: struct.Si4703.html#method.get_channel
-//! [`get_device_id()`]: struct.Si4703.html#method.get_device_id
-//! [`get_chip_id()`]: struct.Si4703.html#method.get_chip_id
+//! [`output_mode()`]: struct.Si4703.html#method.output_mode
+//! [`channel()`]: struct.Si4703.html#method.channel
+//! [`device_id()`]: struct.Si4703.html#method.device_id
+//! [`chip_id()`]: struct.Si4703.html#method.chip_id
 //! [`reset_and_select_i2c_method1()`]: struct.Si4703.html#method.reset_and_select_i2c_method1
+//! [`enable_rds()`]: struct.Si4703.html#method.enable_rds
+//! [`rds_ready()`]: struct.Si4703.html#method.rds_ready
+//! [`rds_synchronized()`]: struct.Si4703.html#method.rds_synchronized
 //!
 //! ## The devices
 //!
