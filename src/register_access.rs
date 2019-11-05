@@ -15,6 +15,10 @@ impl Register {
     pub const TEST1: usize = 0x7;
     pub const STATUSRSSI: usize = 0xA;
     pub const READCHAN: usize = 0xB;
+    pub const RDSA: usize = 0xC;
+    pub const RDSB: usize = 0xD;
+    pub const RDSC: usize = 0xE;
+    pub const RDSD: usize = 0xF;
 }
 
 pub struct BitFlags;
@@ -41,6 +45,14 @@ impl BitFlags {
     pub const XOSCEN: u16 = 1 << 15;
     pub const AHIZEN: u16 = 1 << 14;
     pub const TUNE: u16 = 1 << 15;
+    pub const BLERA1: u16 = 1 << 10;
+    pub const BLERA0: u16 = 1 << 9;
+    pub const BLERB1: u16 = 1 << 15;
+    pub const BLERB0: u16 = 1 << 14;
+    pub const BLERC1: u16 = 1 << 13;
+    pub const BLERC0: u16 = 1 << 12;
+    pub const BLERD1: u16 = 1 << 11;
+    pub const BLERD0: u16 = 1 << 10;
 }
 
 impl<I2C, E, IC> Si4703<I2C, IC>
@@ -55,16 +67,24 @@ where
         Ok(u16::from(data[0]) << 8 | u16::from(data[1]))
     }
 
+    pub(crate) fn read_rds(&mut self) -> Result<[u16; 16], Error<E>> {
+        self.read_some_registers_bare_err(6).map_err(Error::I2C)
+    }
+
     pub(crate) fn read_powercfg(&mut self) -> Result<u16, Error<E>> {
         self.read_powercfg_bare_err().map_err(Error::I2C)
     }
 
     pub(crate) fn read_powercfg_bare_err(&mut self) -> Result<u16, E> {
+        let registers = self.read_some_registers_bare_err(9)?;
+        Ok(registers[Register::POWERCFG])
+    }
+
+    pub(crate) fn read_some_registers_bare_err(&mut self, count: usize) -> Result<[u16; 16], E> {
         const OFFSET: usize = 0xA;
         let mut data = [0; 32];
-        self.i2c.read(DEVICE_ADDRESS, &mut data[..18])?;
-        let registers = to_registers(data, OFFSET);
-        Ok(registers[Register::POWERCFG])
+        self.i2c.read(DEVICE_ADDRESS, &mut data[..count * 2])?;
+        Ok(to_registers(data, OFFSET))
     }
 
     pub(crate) fn read_registers(&mut self) -> Result<[u16; 16], Error<E>> {

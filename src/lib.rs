@@ -30,6 +30,7 @@
 //!     - Enable/disable RDS. See: [`enable_rds()`].
 //!     - Read whether a new RDS group is ready. See: [`rds_ready()`].
 //!     - Read whether RDS is synchronized. See: [`rds_synchronized()`].
+//!     - Read RDS data. See: [`rds_data()`].
 //!
 //! [`enable()`]: struct.Si4703.html#method.enable
 //! [`mute()`]: struct.Si4703.html#method.mute
@@ -56,6 +57,7 @@
 //! [`enable_rds()`]: struct.Si4703.html#method.enable_rds
 //! [`rds_ready()`]: struct.Si4703.html#method.rds_ready
 //! [`rds_synchronized()`]: struct.Si4703.html#method.rds_synchronized
+//! [`rds_data()`]: struct.Si4703.html#method.rds_data
 //!
 //! ## The devices
 //!
@@ -176,9 +178,9 @@ mod types;
 use crate::types::OperationState;
 pub use crate::types::{
     ic, marker, Band, ChannelSpacing, DeEmphasis, Error, ErrorWithPin, Gpio1Config, Gpio2Config,
-    Gpio3Config, OutputMode, RdsMode, SeekDirection, SeekFmImpulseThreshold, SeekMode,
-    SeekSnrThreshold, Si4703, SoftmuteAttenuation, SoftmuteRate, StereoToMonoBlendLevel,
-    TuneChannel, Volume,
+    Gpio3Config, OutputMode, RdsBlockData, RdsBlockErrors, RdsData, RdsMode, SeekDirection,
+    SeekFmImpulseThreshold, SeekMode, SeekSnrThreshold, Si4703, SoftmuteAttenuation, SoftmuteRate,
+    StereoToMonoBlendLevel, TuneChannel, Volume,
 };
 
 impl marker::WithRds for ic::Si4703 {}

@@ -409,6 +409,47 @@ pub enum TuneChannel {
     Mhz(f32),
 }
 
+/// RDS block errors
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum RdsBlockErrors {
+    /// No errors
+    None,
+    /// 1-2 errors requiring correction.
+    OneOrTwo,
+    /// 3-5 errors requiring correction.
+    ThreeToFive,
+    /// 6+ errors or error in checkword. Correction not possible.
+    TooMany,
+}
+
+impl Default for RdsBlockErrors {
+    fn default() -> Self {
+        RdsBlockErrors::None
+    }
+}
+
+/// RDS block data
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub struct RdsBlockData {
+    /// Data
+    pub data: u16,
+    /// Block errors
+    pub errors: RdsBlockErrors,
+}
+
+/// RDS data data
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub struct RdsData {
+    /// Block A
+    pub a: RdsBlockData,
+    /// Block B
+    pub b: RdsBlockData,
+    /// Block C
+    pub c: RdsBlockData,
+    /// Block D
+    pub d: RdsBlockData,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -437,4 +478,5 @@ mod tests {
     default_test!(default_blend, StereoToMonoBlendLevel, Dbuv31_49);
     default_test!(default_snr, SeekSnrThreshold, Disabled);
     default_test!(default_fm_impulse, SeekFmImpulseThreshold, Disabled);
+    default_test!(default_rds_block_err, RdsBlockErrors, None);
 }

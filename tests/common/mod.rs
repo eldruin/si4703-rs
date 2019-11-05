@@ -27,6 +27,14 @@ impl BitFlags {
     pub const XOSCEN: u16 = 1 << 15;
     pub const AHIZEN: u16 = 1 << 14;
     pub const TUNE: u16 = 1 << 15;
+    pub const BLERA1: u16 = 1 << 10;
+    pub const BLERA0: u16 = 1 << 9;
+    pub const BLERB1: u16 = 1 << 15;
+    pub const BLERB0: u16 = 1 << 14;
+    pub const BLERC1: u16 = 1 << 13;
+    pub const BLERC0: u16 = 1 << 12;
+    pub const BLERD1: u16 = 1 << 11;
+    pub const BLERD0: u16 = 1 << 10;
 }
 
 #[allow(unused)]
