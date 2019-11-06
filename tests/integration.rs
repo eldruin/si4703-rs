@@ -18,6 +18,7 @@ write_test!(can_enable_ahiz, BF::AHIZEN, 16, 6, enable_audio_high_z);
 write_test!(can_disable_ahiz, 0, 16, 6, disable_audio_high_z);
 
 write_powercfg_test!(can_enable, BF::ENABLE, enable);
+write_powercfg_test!(can_disable, BF::ENABLE | BF::DISABLE, disable);
 
 write_powercfg_test!(can_unmute, BF::DMUTE, unmute);
 write_powercfg_test!(can_mute, 0x0, mute);

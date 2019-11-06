@@ -67,6 +67,11 @@ where
         let powercfg = self.read_powercfg()?;
         self.write_powercfg((powercfg | BitFlags::ENABLE) & !BitFlags::DISABLE)
     }
+
+    /// Disable the device (power down).
+    pub fn disable(&mut self) -> Result<(), Error<E>> {
+        let powercfg = self.read_powercfg()?;
+        self.write_powercfg(powercfg | BitFlags::ENABLE | BitFlags::DISABLE)
     }
 
     /// Unmute (disable mute)
