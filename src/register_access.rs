@@ -38,6 +38,7 @@ impl BitFlags {
     pub const SEEK: u16 = 1 << 8;
     pub const ENABLE: u16 = 1;
     pub const DISABLE: u16 = 1 << 6;
+    pub const RDSIEN: u16 = 1 << 15;
     pub const STCIEN: u16 = 1 << 14;
     pub const RDS: u16 = 1 << 12;
     pub const AGCD: u16 = 1 << 10;

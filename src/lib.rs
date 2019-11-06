@@ -28,6 +28,7 @@
 //! - Reset and select I2C communication using several methods. See: [`reset_and_select_i2c_method1()`].
 //! - RDS/RBDS (only on Si4703):
 //!     - Enable/disable RDS. See: [`enable_rds()`].
+//!     - Enable/disable RDS interrupts. See: [`enable_rds_interrupts()`].
 //!     - Read whether a new RDS group is ready. See: [`rds_ready()`].
 //!     - Read whether RDS is synchronized. See: [`rds_synchronized()`].
 //!     - Read RDS data. See: [`rds_data()`].
@@ -55,6 +56,7 @@
 //! [`chip_id()`]: struct.Si4703.html#method.chip_id
 //! [`reset_and_select_i2c_method1()`]: struct.Si4703.html#method.reset_and_select_i2c_method1
 //! [`enable_rds()`]: struct.Si4703.html#method.enable_rds
+//! [`enable_rds_interrupts()`]: struct.Si4703.html#method.enable_rds_interrupts
 //! [`rds_ready()`]: struct.Si4703.html#method.rds_ready
 //! [`rds_synchronized()`]: struct.Si4703.html#method.rds_synchronized
 //! [`rds_data()`]: struct.Si4703.html#method.rds_data

@@ -35,6 +35,7 @@ This driver allows you to:
 - Reset and select I2C communication using several methods. See: `reset_and_select_i2c_method1()`.
 - RDS/RBDS (only on Si4703):
     - Enable/disable RDS. See: `enable_rds()`.
+    - Enable/disable RDS interrupts. See: `enable_rds_interrupts()`.
     - Read whether a new RDS group is ready. See: `rds_ready()`.
     - Read whether RDS is synchronized. See: `rds_synchronized()`.
 

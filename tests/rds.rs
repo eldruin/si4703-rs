@@ -27,6 +27,9 @@ fn can_enable_rds_verbose() {
     destroy(dev);
 }
 
+write_test!(en_rds_int, BF::RDSIEN, 16, 3, enable_rds_interrupts);
+write_test!(dis_rds_int, 0, 16, 3, disable_rds_interrupts);
+
 read_test!(rds_not_sync, 0, 1, false, rds_synchronized);
 read_test!(rds_sync, BF::RDSS, 1, true, rds_synchronized);
 
