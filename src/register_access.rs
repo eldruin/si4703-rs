@@ -63,7 +63,7 @@ where
     pub(crate) fn read_status(&mut self) -> Result<u16, Error<E>> {
         let mut data = [0, 0];
         self.i2c
-            .read(DEVICE_ADDRESS, &mut data[..2])
+            .read(DEVICE_ADDRESS, &mut data[..1])
             .map_err(Error::I2C)?;
         Ok(u16::from(data[0]) << 8 | u16::from(data[1]))
     }
