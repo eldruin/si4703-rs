@@ -1,5 +1,6 @@
 use crate::{
-    marker, BitFlags, Error, RdsBlockData, RdsBlockErrors, RdsData, RdsMode, Register, Si4703,
+    marker, BitFlags, Error, RdsBlockData, RdsBlockErrors, RdsData, RdsMode, RdsRadioText,
+    RdsRadioTextData, Register, Si4703,
 };
 use embedded_hal::blocking::i2c;
 
@@ -89,6 +90,57 @@ fn get_block_errors(data: u16, bitmask1: u16, bitmask0: u16) -> RdsBlockErrors {
         (true, false) => RdsBlockErrors::ThreeToFive,
         (true, true) => RdsBlockErrors::TooMany,
     }
+}
+
+
+/// Get radio text from RDS data.
+pub fn get_rds_radio_text(data: &RdsData) -> Option<RdsRadioText> {
+    // See Radio Text here: https://en.wikipedia.org/wiki/Radio_Data_System
+    const RADIO_TEXT_GTYPE: u16 = 0x2 << 12;
+    if data.b.errors == RdsBlockErrors::None || data.b.errors == RdsBlockErrors::OneOrTwo {
+        let gtype = data.b.data & (0xF << 12);
+        if gtype == RADIO_TEXT_GTYPE {
+            let should_clear = (data.b.data & (1 << 4)) != 0;
+            let segment_offset = (data.b.data & 0xF) as usize;
+            let b0 = data.b.data & (1 << 11);
+            if b0 == 0 {
+                if data.c.errors != RdsBlockErrors::TooMany
+                    && data.d.errors != RdsBlockErrors::TooMany
+                {
+                    return Some(RdsRadioText {
+                        screen_clear: should_clear,
+                        text: Some((
+                            RdsRadioTextData::Four(
+                                ((data.c.data & 0xFF00) >> 8) as u8 as char,
+                                (data.c.data & 0xFF) as u8 as char,
+                                ((data.d.data & 0xFF00) >> 8) as u8 as char,
+                                (data.d.data & 0xFF) as u8 as char,
+                            ),
+                            segment_offset * 4,
+                        )),
+                    });
+                }
+            } else {
+                if data.d.errors != RdsBlockErrors::TooMany {
+                    return Some(RdsRadioText {
+                        screen_clear: should_clear,
+                        text: Some((
+                            RdsRadioTextData::Two(
+                                ((data.d.data & 0xFF00) >> 8) as u8 as char,
+                                (data.d.data & 0xFF) as u8 as char,
+                            ),
+                            segment_offset * 2,
+                        )),
+                    });
+                }
+            }
+            return Some(RdsRadioText {
+                screen_clear: should_clear,
+                text: None,
+            });
+        }
+    }
+    None
 }
 
 #[cfg(test)]

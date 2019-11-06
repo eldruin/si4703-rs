@@ -450,6 +450,23 @@ pub struct RdsData {
     pub d: RdsBlockData,
 }
 
+/// RDS radio text data
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum RdsRadioTextData {
+    /// Two characters
+    Two(char, char),
+    /// Four characters
+    Four(char, char, char, char),
+}
+/// RDS radio text
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct RdsRadioText {
+    /// Screen clear requested (Text A/B)
+    pub screen_clear: bool,
+    /// Text + segment offset [0-63]
+    pub text: Option<(RdsRadioTextData, usize)>,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

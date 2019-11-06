@@ -1,5 +1,8 @@
 use embedded_hal_mock::i2c::Transaction as I2cTrans;
-use si4703::{RdsBlockData, RdsBlockErrors, RdsData, RdsMode};
+use si4703::{
+    get_rds_radio_text, RdsBlockData, RdsBlockErrors, RdsData, RdsMode, RdsRadioText,
+    RdsRadioTextData,
+};
 
 mod common;
 use self::common::{destroy, new_si4703, BitFlags as BF, DEV_ADDR};
@@ -74,4 +77,183 @@ fn get_rds_data() {
     let mut dev = new_si4703(&transactions);
     assert_eq!(rds_data, dev.rds_data().unwrap());
     destroy(dev);
+}
+
+mod get_rds_radio_text {
+    use super::*;
+    const NULL_TEXT: RdsRadioTextData = RdsRadioTextData::Four('\0', '\0', '\0', '\0');
+
+    #[test]
+    fn unsupported_number_of_errors_in_block_b() {
+        let data = RdsData {
+            b: RdsBlockData {
+                data: 0,
+                errors: RdsBlockErrors::ThreeToFive,
+            },
+            ..Default::default()
+        };
+        assert_eq!(None, get_rds_radio_text(&data));
+    }
+
+    #[test]
+    fn different_type() {
+        let data = RdsData {
+            b: RdsBlockData {
+                data: 0x3000,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            ..Default::default()
+        };
+        assert_eq!(None, get_rds_radio_text(&data));
+    }
+
+    #[test]
+    fn erroneous_data_c_for_four() {
+        let data = RdsData {
+            b: RdsBlockData {
+                data: 0x2000,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            c: RdsBlockData {
+                data: 0,
+                errors: RdsBlockErrors::TooMany,
+            },
+            ..Default::default()
+        };
+        assert_eq!(
+            Some(RdsRadioText {
+                screen_clear: false,
+                text: None
+            }),
+            get_rds_radio_text(&data)
+        );
+    }
+
+    #[test]
+    fn erroneous_data_d_for_four() {
+        let data = RdsData {
+            b: RdsBlockData {
+                data: 0x2000,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            d: RdsBlockData {
+                data: 0,
+                errors: RdsBlockErrors::TooMany,
+            },
+            ..Default::default()
+        };
+        assert_eq!(
+            Some(RdsRadioText {
+                screen_clear: false,
+                text: None
+            }),
+            get_rds_radio_text(&data)
+        );
+    }
+
+    #[test]
+    fn read_four() {
+        let data = RdsData {
+            b: RdsBlockData {
+                data: 0x2000,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            c: RdsBlockData {
+                data: 0x4142,
+                errors: RdsBlockErrors::ThreeToFive,
+            },
+            d: RdsBlockData {
+                data: 0x4344,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            ..Default::default()
+        };
+        assert_eq!(
+            Some(RdsRadioText {
+                screen_clear: false,
+                text: Some((RdsRadioTextData::Four('A', 'B', 'C', 'D'), 0)),
+            }),
+            get_rds_radio_text(&data)
+        );
+    }
+
+    #[test]
+    fn can_get_screen_clear() {
+        let data = RdsData {
+            b: RdsBlockData {
+                data: 0x2010,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            ..Default::default()
+        };
+        assert_eq!(
+            Some(RdsRadioText {
+                screen_clear: true,
+                text: Some((NULL_TEXT, 0)),
+            }),
+            get_rds_radio_text(&data)
+        );
+    }
+
+    #[test]
+    fn can_get_offset() {
+        let data = RdsData {
+            b: RdsBlockData {
+                data: 0x2009,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            ..Default::default()
+        };
+        assert_eq!(
+            Some(RdsRadioText {
+                screen_clear: false,
+                text: Some((NULL_TEXT, 9 * 4)),
+            }),
+            get_rds_radio_text(&data)
+        );
+    }
+
+    #[test]
+    fn read_two() {
+        let data = RdsData {
+            b: RdsBlockData {
+                data: 0x2809,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            d: RdsBlockData {
+                data: 0x4142,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            ..Default::default()
+        };
+        assert_eq!(
+            Some(RdsRadioText {
+                screen_clear: false,
+                text: Some((RdsRadioTextData::Two('A', 'B'), 9 * 2)),
+            }),
+            get_rds_radio_text(&data)
+        );
+    }
+
+    #[test]
+    fn erroneous_data_d_for_two() {
+        let data = RdsData {
+            b: RdsBlockData {
+                data: 0x2800,
+                errors: RdsBlockErrors::OneOrTwo,
+            },
+            d: RdsBlockData {
+                data: 0,
+                errors: RdsBlockErrors::TooMany,
+            },
+            ..Default::default()
+        };
+        assert_eq!(
+            Some(RdsRadioText {
+                screen_clear: false,
+                text: None
+            }),
+            get_rds_radio_text(&data)
+        );
+    }
 }
