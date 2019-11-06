@@ -33,6 +33,7 @@
 //!     - Read whether RDS is synchronized. See: [`rds_synchronized()`].
 //!     - Read RDS data. See: [`rds_data()`].
 //!     - Decode RDS radio text from RDS data. See: [`get_rds_radio_text()`].
+//!     - Fill char array with decoded RDS radio text from RDS data. See: [`fill_with_rds_radio_text()`].
 //!
 //! [`enable()`]: struct.Si4703.html#method.enable
 //! [`mute()`]: struct.Si4703.html#method.mute
@@ -62,6 +63,7 @@
 //! [`rds_synchronized()`]: struct.Si4703.html#method.rds_synchronized
 //! [`rds_data()`]: struct.Si4703.html#method.rds_data
 //! [`get_rds_radio_text()`]: struct.Si4703.html#method.get_rds_radio_text
+//! [`fill_with_rds_radio_text()`]: struct.Si4703.html#method.fill_with_rds_radio_text
 //!
 //! ## The devices
 //!
@@ -169,7 +171,7 @@
 
 mod device_impl;
 mod rds;
-pub use rds::get_rds_radio_text;
+pub use rds::{fill_with_rds_radio_text, get_rds_radio_text};
 mod register_access;
 mod reset;
 mod seek;

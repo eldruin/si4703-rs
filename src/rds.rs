@@ -92,6 +92,31 @@ fn get_block_errors(data: u16, bitmask1: u16, bitmask0: u16) -> RdsBlockErrors {
     }
 }
 
+/// Fill char array with radio text with the RDS data.
+///
+/// This needs to be called repeatedly with each new data package.
+/// Will return true when a screen clear was requested.
+pub fn fill_with_rds_radio_text(text: &mut [char; 64], data: &RdsData) -> bool {
+    if let Some(data) = get_rds_radio_text(data) {
+        if let Some((text_data, offset)) = data.text {
+            match text_data {
+                RdsRadioTextData::Two(a, b) => {
+                    text[offset] = a;
+                    text[offset + 1] = b;
+                }
+                RdsRadioTextData::Four(a, b, c, d) => {
+                    text[offset] = a;
+                    text[offset + 1] = b;
+                    text[offset + 2] = c;
+                    text[offset + 3] = d;
+                }
+            }
+        }
+        data.screen_clear
+    } else {
+        false
+    }
+}
 
 /// Get radio text from RDS data.
 pub fn get_rds_radio_text(data: &RdsData) -> Option<RdsRadioText> {

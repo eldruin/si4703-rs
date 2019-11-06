@@ -40,6 +40,7 @@ This driver allows you to:
     - Read whether RDS is synchronized. See: `rds_synchronized()`.
     - Read RDS data. See: `rds_data()`.
     - Decode RDS radio text from RDS data. See: `get_rds_radio_text()`.
+    - Fill char array with decoded RDS radio text from RDS data. See: `fill_with_rds_radio_text()`.
 
 <!--TODO
 [Introductory blog post](https://blog.eldruin.com/...)
