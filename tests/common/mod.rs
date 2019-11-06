@@ -12,6 +12,7 @@ impl BitFlags {
     pub const SKMODE: u16 = 1 << 10;
     pub const SEEKUP: u16 = 1 << 9;
     pub const SEEK: u16 = 1 << 8;
+    pub const ENABLE: u16 = 1;
     pub const DE: u16 = 1 << 11;
     pub const STCIEN: u16 = 1 << 14;
     pub const RDSR: u16 = 1 << 15;

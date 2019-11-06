@@ -64,7 +64,9 @@ where
     /// See: Powerup time in the datasheet.
     /// On the Si4703, this is a maximum of 110ms.
     pub fn enable(&mut self) -> Result<(), Error<E>> {
-        self.write_powercfg(BitFlags::ENABLE)
+        let powercfg = self.read_powercfg()?;
+        self.write_powercfg((powercfg | BitFlags::ENABLE) & !BitFlags::DISABLE)
+    }
     }
 
     /// Unmute (disable mute)
