@@ -38,6 +38,7 @@ This driver allows you to:
     - Enable/disable RDS interrupts. See: `enable_rds_interrupts()`.
     - Read whether a new RDS group is ready. See: `rds_ready()`.
     - Read whether RDS is synchronized. See: `rds_synchronized()`.
+    - Read RDS data. See: `rds_data()`.
 
 <!--TODO
 [Introductory blog post](https://blog.eldruin.com/...)
