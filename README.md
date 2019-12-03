@@ -1,9 +1,7 @@
 # Rust Si4703 FM Radio Turner (Receiver) Driver
 
-<!--TODO
 [![crates.io](https://img.shields.io/crates/v/si4703.svg)](https://crates.io/crates/si4703)
 [![Docs](https://docs.rs/si4703/badge.svg)](https://docs.rs/si4703)
--->
 [![Build Status](https://travis-ci.org/eldruin/si4703-rs.svg?branch=master)](https://travis-ci.org/eldruin/si4703-rs)
 [![Coverage Status](https://coveralls.io/repos/github/eldruin/si4703-rs/badge.svg?branch=master)](https://coveralls.io/github/eldruin/si4703-rs?branch=master)
 
@@ -42,9 +40,7 @@ This driver allows you to:
     - Decode RDS radio text from RDS data. See: `get_rds_radio_text()`.
     - Fill char array with decoded RDS radio text from RDS data. See: `fill_with_rds_radio_text()`.
 
-<!--TODO
-[Introductory blog post](https://blog.eldruin.com/...)
--->
+[Introductory blog post](https://blog.eldruin.com/si4703-fm-radio-receiver-driver-in-rust/)
 
 ## The devices
 

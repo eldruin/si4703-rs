@@ -8,3 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ...
+
+## [0.1.0] - 2019-12-03
+
+Initial release to crates.io.
+
+[Unreleased]: https://github.com/eldruin/si4703-rs/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/eldruin/si4703-rs/releases/tag/v0.1.0
