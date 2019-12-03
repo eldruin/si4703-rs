@@ -119,8 +119,8 @@ macro_rules! read_test {
         #[test]
         fn $name() {
             let mut read = [0; $read_reg_count*2];
-            read[($read_reg_count-1)*2] = ($value >> 8) as u8;
-            read[($read_reg_count-1)*2+1] = $value as u8;
+            read[0] = ($value >> 8) as u8;
+            read[1] = $value as u8;
             let transactions = [
                 I2cTrans::read(DEV_ADDR, read.to_vec())];
             let mut dev = new_si4703(&transactions);

@@ -33,11 +33,11 @@ fn can_enable_rds_verbose() {
 write_test!(en_rds_int, BF::RDSIEN, 16, 3, enable_rds_interrupts);
 write_test!(dis_rds_int, 0, 16, 3, disable_rds_interrupts);
 
-read_test!(rds_not_sync, 0, 1, false, rds_synchronized);
-read_test!(rds_sync, BF::RDSS, 1, true, rds_synchronized);
+read_test!(rds_not_sync, 0, 2, false, rds_synchronized);
+read_test!(rds_sync, BF::RDSS, 2, true, rds_synchronized);
 
-read_test!(rds_not_ready, 0, 1, false, rds_ready);
-read_test!(rds_ready, BF::RDSR, 1, true, rds_ready);
+read_test!(rds_not_ready, 0, 2, false, rds_ready);
+read_test!(rds_ready, BF::RDSR, 2, true, rds_ready);
 
 #[test]
 fn get_rds_data() {

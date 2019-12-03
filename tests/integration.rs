@@ -195,8 +195,8 @@ get_channel_test!(get_channel_0_1_sp, 1 << 4, 100_u16, 87.5 + 100.0 * 0.1);
 get_channel_test!(get_channel_0_05_sp, 2 << 4, 100_u16, 87.5 + 100.0 * 0.05);
 get_channel_test!(get_chan_comb, 1 << 6 | 2 << 4, 100_u16, 76.0 + 100.0 * 0.05);
 
-read_test!(out_mode_mono, 0, 1, OutputMode::Mono, output_mode);
-read_test!(out_mode_stereo, BF::ST, 1, OutputMode::Stereo, output_mode);
+read_test!(out_mode_mono, 0, 2, OutputMode::Mono, output_mode);
+read_test!(out_mode_stereo, BF::ST, 2, OutputMode::Stereo, output_mode);
 
 #[test]
 fn can_read_device_id() {
