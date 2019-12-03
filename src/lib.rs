@@ -171,7 +171,7 @@
 
 mod device_impl;
 mod rds;
-pub use rds::{fill_with_rds_radio_text, get_rds_radio_text};
+pub use crate::rds::{fill_with_rds_radio_text, get_rds_radio_text};
 mod register_access;
 mod reset;
 mod seek;
