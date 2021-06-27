@@ -145,20 +145,19 @@ pub fn get_rds_radio_text(data: &RdsData) -> Option<RdsRadioText> {
                         )),
                     });
                 }
-            } else {
-                if data.d.errors != RdsBlockErrors::TooMany {
-                    return Some(RdsRadioText {
-                        screen_clear: should_clear,
-                        text: Some((
-                            RdsRadioTextData::Two(
-                                ((data.d.data & 0xFF00) >> 8) as u8 as char,
-                                (data.d.data & 0xFF) as u8 as char,
-                            ),
-                            segment_offset * 2,
-                        )),
-                    });
-                }
+            } else if data.d.errors != RdsBlockErrors::TooMany {
+                return Some(RdsRadioText {
+                    screen_clear: should_clear,
+                    text: Some((
+                        RdsRadioTextData::Two(
+                            ((data.d.data & 0xFF00) >> 8) as u8 as char,
+                            (data.d.data & 0xFF) as u8 as char,
+                        ),
+                        segment_offset * 2,
+                    )),
+                });
             }
+
             return Some(RdsRadioText {
                 screen_clear: should_clear,
                 text: None,
