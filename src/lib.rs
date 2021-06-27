@@ -66,7 +66,7 @@
 //! [`fill_with_rds_radio_text()`]: struct.Si4703.html#method.fill_with_rds_radio_text
 //!
 //! [Introductory blog post](https://blog.eldruin.com/si4703-fm-radio-receiver-driver-in-rust/)
-//! 
+//!
 //! ## The devices
 //!
 //! The Si4702/03-C19 extends Silicon Laboratories Si4700/Si4701 FM tuner
