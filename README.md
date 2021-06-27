@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/si4703.svg)](https://crates.io/crates/si4703)
 [![Docs](https://docs.rs/si4703/badge.svg)](https://docs.rs/si4703)
-[![Build Status](https://travis-ci.org/eldruin/si4703-rs.svg?branch=master)](https://travis-ci.org/eldruin/si4703-rs)
+[![Build Status](https://github.com/eldruin/si4703-rs/workflows/Build/badge.svg)](https://github.com/eldruin/si4703-rs/actions?query=workflow%3ABuild)
 [![Coverage Status](https://coveralls.io/repos/github/eldruin/si4703-rs/badge.svg?branch=master)](https://coveralls.io/github/eldruin/si4703-rs?branch=master)
 
 This is a platform agnostic Rust driver for the Si4703 and Si4702 FM radio turners
